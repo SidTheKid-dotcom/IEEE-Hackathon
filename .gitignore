@@ -1,0 +1,8 @@
+# Prisma
+/prisma/.env
+
+# Node.js
+/node_modules
+
+# IDE
+.vscode/
