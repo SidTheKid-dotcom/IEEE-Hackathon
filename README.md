@@ -25,16 +25,12 @@ Prerequisites
 Setup
 1. Clone the Repository
 
-bash
-
-git clone https://github.com/your-username/your-repository.git
-cd your-repository
+git clonehttps://github.com/SidTheKid-dotcom/IEEE-Hackathon.git
+cd IEEE-Hackathon
 
 2. Install Dependencies
 
 Navigate to the backend directory and install dependencies:
-
-bash
 
 cd backend
 npm install
@@ -51,8 +47,6 @@ DATABASE_URL="your-database-connection-string"
 
 Generate Prisma client and migrate the database:
 
-bash
-
 npx prisma generate
 npx prisma migrate dev --name init
 
@@ -60,39 +54,8 @@ npx prisma migrate dev --name init
 
 In the backend directory, start the server:
 
-bash
-
 npm start
 
-6. Run the Test Script (Optional)
-
-bash
-
-node test.js
-
-Project Structure
-
-css
-
-your-repository/
-│
-├── prisma/
-│   ├── migrations/
-│   └── schema.prisma
-│
-├── backend/
-│   ├── controllers/
-│   ├── routes/
-│   ├── app.js
-│   ├── server.js
-│   └── test.js
-│
-├── frontend/
-│   └── ... (Your frontend code)
-│
-├── .gitignore
-├── package.json
-└── README.md
 
 Contributing
 
