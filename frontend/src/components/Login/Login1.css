@@ -1,0 +1,191 @@
+.mai {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.left {
+    background-color: red;
+    background: linear-gradient(to right, rgb(112, 0, 0), rgb(216, 82, 82));
+    width: 50vw;
+}
+
+.right {
+    background-color: white;
+    background: linear-gradient(to left, gray, white);
+    width: 50%;
+}
+
+.circle {
+    height: 500px;
+    width: 500px;
+    position: fixed;
+    top: calc(50% - 250px);
+    left: calc(50% - 250px);
+    border-radius: 50%;
+    background-color: rgb(179, 174, 174);
+    background: linear-gradient(white, rgb(156, 155, 155));
+    box-shadow: 15px 14px 3px 0px rgb(180, 117, 117);
+    overflow: hidden;
+}
+
+.top {
+    height: 50%;
+    position: absolute;
+    top: 0%;
+    width: 100%;
+    background-color: red;
+    text-align: center;
+}
+
+.bottom {
+    height: 50%;
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    bottom: 0%;
+    border-top: 5px solid black;
+    text-align: center;
+}
+
+.class {
+    height: 50%;
+    position: absolute;
+    top: 0%;
+    width: 100%;
+    background-color: red;
+    text-align: center;
+    animation: upper 1s ease-in forwards;
+}
+
+.class1 {
+    height: 50%;
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    bottom: 0%;
+    text-align: center;
+    animation: down 1s ease-in forwards;
+}
+
+.mid {
+    z-index: 2;
+    position: absolute;
+    top: calc(50% - 40px);
+    left: calc(50% - 40px);
+    border-radius: 50%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    width: 80px;
+    color: beige;
+    background-color: rgb(8, 3, 3);
+}
+
+.circle:hover {
+    animation: shadow 1s linear infinite forwards;
+}
+
+@keyframes shadow {
+    0% {
+        box-shadow: 15px 14px 3px 0px rgb(180, 117, 117);
+    }
+    25% {
+        box-shadow: -15px 14px 3px 0px rgb(180, 117, 117);
+    }
+    50% {
+        box-shadow: -15px -14px 3px 0px rgb(180, 117, 117);
+    }
+    75% {
+        box-shadow: 15px -14px 3px 0px rgb(180, 117, 117);
+    }
+    100% {
+        box-shadow: 15px 14px 3px 0px rgb(180, 117, 117);
+    }
+}
+
+@keyframes upper {
+    0% {
+        transform: translateY(0%);
+    }
+    100% {
+        transform: translateY(-100%);
+    }
+}
+
+@keyframes down {
+    0% {
+        transform: translateY(0%);
+    }
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+.content {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.content input {
+    outline: none;
+    border: none;
+    padding: 10px;
+    border-radius: 30px;
+    border: 1px solid rgb(97, 71, 71);
+}
+
+.onsub {
+    height: 500px;
+    width: 500px;
+    position: fixed;
+    top: calc(50% - 250px);
+    left: calc(50% - 250px);
+    border-radius: 50%;
+    background-color: rgb(179, 174, 174);
+    background: linear-gradient(white, rgb(156, 155, 155));
+    box-shadow: 15px 14px 3px 0px rgb(180, 117, 117);
+    overflow: hidden;
+    animation: shrink 1s ease forwards;
+}
+
+@keyframes shrink {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+
+.temp {
+    transition-duration: 1s;
+}
+
+/* Styling for the Google Sign-In Button */
+.google-button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Styling for the login/signup toggle button */
+.login-signup-toggle {
+    cursor: pointer;
+    color: #007bff;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-top: 20px;
+    font-size: 16px;
+}
