@@ -64,3 +64,6 @@ Contributing
     Make your changes and commit them: git commit -m 'Add some feature'.
     Push to the branch: git push origin my-feature-branch.
     Submit a pull request.
+
+24/07/2024
+Working on homepage , buddyPokemon,Dexmode
