@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-const authMiddleware = require('./authMiddleware').default;
+import authMiddleware from './authMiddleware';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -26,7 +26,7 @@ app.get('/', async (req: Request, res: Response) => {
         const users = await prisma.user.findMany();
         res.json(users);
     } catch (error) {
-        res.status(500).json({ message: 'Error retrieving users' });
+        res.status(500).json({ message: 'Error retrieving users', error: (error as Error).message });
     }
 });
 
@@ -35,7 +35,6 @@ app.post('/signup', async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     try {
-        // Hash the password before storing
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await prisma.user.create({
@@ -46,38 +45,21 @@ app.post('/signup', async (req: Request, res: Response) => {
             },
         });
 
-        // Check if the userID contains only the digit 7
-        let userID = user.id;
-        let flag = true;
-        while (userID > 0) {
-            const dig = userID % 10;
-            if (dig !== 7) {
-                flag = false;
-                break;
-            }
-            userID = Math.floor(userID / 10);
-        }
+        const isLuckyUserID = String(user.id).split('').every(char => char === '7');
+        const starterPokemonIds: number[] = process.env.STARTER_POKEMON_IDS?.split(',').map(Number) || [];
 
-        const starterPokemonIds: number[] = process.env.STARTER_POKEMON_IDS?.split(',').map(Number) ?? [];
+        const buddyPokemon = isLuckyUserID ? 25 : (starterPokemonIds.length > 0
+            ? starterPokemonIds[Math.floor(Math.random() * starterPokemonIds.length)]
+            : 0);
 
-        let buddyPokemon: number;
-        if (flag) {
-            buddyPokemon = 25;
-        } else {
-            buddyPokemon = starterPokemonIds.length > 0
-                ? starterPokemonIds[Math.floor(Math.random() * starterPokemonIds.length)]
-                : 0;
-        }
-
-        // Update the user with the selected buddyPokemon
         await prisma.user.update({
             where: { id: user.id },
-            data: { buddy_pokemon: buddyPokemon }
+            data: { buddy_pokemon: buddyPokemon },
         });
 
         const token = jwt.sign({ userID: user.id }, JWT_SECRET_KEY);
 
-        return res.status(201).json({ message: 'User created', token: token });
+        return res.status(201).json({ message: 'User created', token });
     } catch (error) {
         res.status(500).json({ message: 'Failed to create user', error: (error as Error).message });
     }
@@ -101,12 +83,52 @@ app.post('/signin', async (req: Request, res: Response) => {
 
         const token = jwt.sign({ userID: user.id }, JWT_SECRET_KEY);
 
-        res.status(200).json({
-            message: 'Login successful',
-            token: token
-        });
+        res.status(200).json({ message: 'Login successful', token });
     } catch (error) {
         res.status(500).json({ message: 'Error signing in', error: (error as Error).message });
+    }
+});
+
+// Route: Get user info
+app.get('/user', authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const user = await prisma.user.findUnique({ where: { id: req.userID as number } });
+        res.status(200).json({ user });
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving user', error: (error as Error).message });
+    }
+});
+
+// Route: Get user info for a pokemon
+app.get('/getInfo/:pokemonId', authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const { pokemonId } = req.params;
+        const parsedPokemonId = parseInt(pokemonId, 10);
+
+        if (isNaN(parsedPokemonId)) {
+            return res.status(400).json({ message: 'Invalid Pokemon ID' });
+        }
+
+        const userInfo = await prisma.user.findUnique({
+            where: { id: req.userID as number },
+            include: {
+                ratings: { where: { pokemon_id: parsedPokemonId } },
+                comments: { where: { pokemon_id: parsedPokemonId } },
+                favorites: { where: { pokemon_id: parsedPokemonId } },
+            },
+        });
+
+        if (!userInfo) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const rating = userInfo.ratings[0]?.rating || null;
+        const comment = userInfo.comments[0]?.comment || null;
+        const isFavorite = userInfo.favorites.length > 0;
+
+        res.status(200).json({ rating, comment, isFavorite });
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving state info', error: (error as Error).message });
     }
 });
 
@@ -122,157 +144,158 @@ app.post('/addFavouritePokemon', authMiddleware, async (req: AuthRequest, res: R
                 user_id: req.userID as number,
             },
         });
-        console.log('Added favorite:', newFavorite);
 
-        res.status(201).json({
-            message: "New Favorite Added",
-            newFavorite: newFavorite
-        });
-
+        res.status(201).json({ message: "New Favorite Added", newFavorite });
     } catch (error) {
         res.status(500).json({ message: 'Error creating favorite', error: (error as Error).message });
     }
-
 });
 
+// Route: Remove favorite pokemon
+app.delete('/removeFavouritePokemon', authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const { pokemon_id } = req.body;
+
+        await prisma.favorite.deleteMany({
+            where: {
+                pokemon_id: pokemon_id as number,
+                user_id: req.userID as number,
+            },
+        });
+
+        res.status(200).json({ message: "Favorite removed successfully" });
+    } catch (error) {
+        res.status(500).json({ message: 'Error removing favorite', error: (error as Error).message });
+    }
+});
+
+// Route: Get favorites
+app.get('/getFavourites', authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const favorites = await prisma.favorite.findMany({ where: { user_id: req.userID as number } });
+        res.status(200).json({ favorites });
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving favorites', error: (error as Error).message });
+    }
+});
+
+// Route: Rate a Pokemon
 app.post('/ratePokemon', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { pokemon_id, rating } = req.body;
 
         const newRating = await prisma.rating.create({
             data: {
-                pokemon_id: pokemon_id as number, // Cast pokemon_id to number
-                rating: rating as number, // Cast rating to number
-                user_id: req.userID as number, // Use req.user for userID
+                pokemon_id: pokemon_id as number,
+                rating: rating as number,
+                user_id: req.userID as number,
             },
         });
-        console.log('Added rating:', newRating);
 
-        return res.status(201).json({
-            message: "Pokemon rated successfully",
-            newRating: newRating
-        })
-    }
-    catch (error) {
+        res.status(201).json({ message: "Pokemon rated successfully", newRating });
+    } catch (error) {
         res.status(500).json({ message: 'Error creating rating', error: (error as Error).message });
     }
-})
+});
 
-// Update rating for a Pokemon
+// Route: Update rating for a Pokemon
 app.put('/updateRating/:ratingId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { ratingId } = req.params;
-        const { pokemon_id, rating } = req.body;
+        const { rating } = req.body;
 
-        const updatedRating = await prisma.rating.update({
+        const updatedRating = await prisma.rating.updateMany({
             where: {
-                id: parseInt(ratingId),
-                pokemon_id: parseInt(pokemon_id),
+                id: parseInt(ratingId, 10),
                 user_id: req.userID as number,
             },
             data: {
-                rating: parseInt(rating),
+                rating: parseInt(rating, 10),
             },
         });
 
-        return res.status(200).json({
-            message: "Rating updated successfully",
-            updatedRating: updatedRating
-        });
+        res.status(200).json({ message: "Rating updated successfully", updatedRating });
     } catch (error) {
         res.status(500).json({ message: 'Error updating rating', error: (error as Error).message });
     }
 });
 
-// Delete rating for a Pokemon
+// Route: Delete rating for a Pokemon
 app.delete('/deleteRating/:ratingId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { ratingId } = req.params;
 
-        await prisma.rating.delete({
+        await prisma.rating.deleteMany({
             where: {
-                id: parseInt(ratingId),
+                id: parseInt(ratingId, 10),
                 user_id: req.userID as number,
             },
         });
 
-        return res.status(200).json({
-            message: "Rating deleted successfully"
-        });
+        res.status(200).json({ message: "Rating deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting rating', error: (error as Error).message });
     }
 });
 
+// Route: Comment on a Pokemon
 app.post('/commentPokemon', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { pokemon_id, comment } = req.body;
 
         const newComment = await prisma.comment.create({
             data: {
-                pokemon_id: pokemon_id as number, // Cast pokemon_id to number
-                comment: comment as string, // Cast rating to number
-                user_id: req.userID as number, // Use req.user for userID
+                pokemon_id: pokemon_id as number,
+                comment: comment as string,
+                user_id: req.userID as number,
             },
         });
-        console.log('Added comment:', newComment);
 
-        return res.status(201).json({
-            message: "Commented on Pokemon successfully",
-            newComment: newComment
-        })
+        res.status(201).json({ message: "Commented on Pokemon successfully", newComment });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating comment', error: (error as Error).message });
     }
-    catch (error) {
-        res.status(500).json({ message: 'Error creating rating', error: (error as Error).message });
-    }
-})
+});
 
-// Update comment for a Pokemon
+// Route: Update comment for a Pokemon
 app.put('/updateComment/:commentId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { commentId } = req.params;
-        const { pokemon_id, comment } = req.body;
+        const { comment } = req.body;
 
-        const updatedComment = await prisma.comment.update({
+        const updatedComment = await prisma.comment.updateMany({
             where: {
-                id: parseInt(commentId),
-                pokemon_id: parseInt(pokemon_id), // Convert pokemon_id to number
-                user_id: req.userID as number, // Use req.user for userID
+                id: parseInt(commentId, 10),
+                user_id: req.userID as number,
             },
             data: {
                 comment: comment as string,
             },
         });
 
-        return res.status(200).json({
-            message: "Comment updated successfully",
-            updatedComment: updatedComment
-        });
+        res.status(200).json({ message: "Comment updated successfully", updatedComment });
     } catch (error) {
         res.status(500).json({ message: 'Error updating comment', error: (error as Error).message });
     }
 });
 
-// Delete comment for a Pokemon
+// Route: Delete comment for a Pokemon
 app.delete('/deleteComment/:commentId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { commentId } = req.params;
 
-        await prisma.comment.delete({
+        await prisma.comment.deleteMany({
             where: {
-                id: parseInt(commentId),
-                user_id: req.userID as number
+                id: parseInt(commentId, 10),
+                user_id: req.userID as number,
             },
         });
 
-        return res.status(200).json({
-            message: "Comment deleted successfully"
-        });
+        res.status(200).json({ message: "Comment deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting comment', error: (error as Error).message });
     }
 });
-
 
 // Start the server
 app.listen(port, () => {
