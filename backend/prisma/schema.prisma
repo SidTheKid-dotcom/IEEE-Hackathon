@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,17 +11,41 @@ datasource db {
 }
 
 model User {
-  user_id  Int      @id @default(autoincrement())
-  email    String   @unique
-  password String
-  favorites Favorite[]
+  id            Int        @id @default(autoincrement())
+  email         String     @unique
+  password      String
+  buddy_pokemon Int
+  favorites     Favorite[]
+  ratings       Rating[]
+  comments      Comment[]
 }
 
 model Favorite {
-  id           Int      @id @default(autoincrement())
+  id           Int    @id @default(autoincrement())
   pokemon_id   Int
   pokemon_name String
   user_id      Int
-  user         User     @relation(fields: [user_id], references: [user_id])
-  @@index([user_id], name: "idx_user_id")
+  user         User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_favorite_user_id")
+}
+
+model Rating {
+  id         Int  @id @default(autoincrement())
+  pokemon_id Int
+  rating     Int?
+  user_id    Int
+  user       User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_rating_user_id")
+}
+
+model Comment {
+  id         Int     @id @default(autoincrement())
+  pokemon_id Int
+  comment    String?
+  user_id    Int
+  user       User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_comment_user_id")
 }
