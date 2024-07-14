@@ -27,6 +27,7 @@
     background-color: rgb(179, 174, 174);
     background: linear-gradient(white, rgb(156, 155, 155));
     box-shadow: 15px 14px 3px 0px rgb(180, 117, 117);
+    
     overflow: hidden;
 }
 
@@ -56,7 +57,7 @@
     width: 100%;
     background-color: red;
     text-align: center;
-    animation: upper 1s ease-in forwards;
+    animation: upper 2.5s ease-in forwards;
 }
 
 .class1 {
@@ -66,7 +67,7 @@
     position: absolute;
     bottom: 0%;
     text-align: center;
-    animation: down 1s ease-in forwards;
+    animation: down 2.5s ease-in forwards;
 }
 
 .mid {
@@ -153,7 +154,7 @@
     border-radius: 50%;
     background-color: rgb(179, 174, 174);
     background: linear-gradient(white, rgb(156, 155, 155));
-    box-shadow: 15px 14px 3px 0px rgb(180, 117, 117);
+    /* box-shadow: 15px 14px 3px 0px rgb(180, 117, 117); */
     overflow: hidden;
     animation: shrink 1s ease forwards;
 }
