@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import './App.css'
+// src/App.tsx
+import React from 'react';
+import PokemonMap from './components/PokemonMap';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App: React.FC = () => {
   return (
-    <>
-      <div>{count}</div>
-    </>
-  )
-}
+    <div className="App">
+      <h1>Pokémon Map</h1>
+      <PokemonMap pokemonId={1} />
+    </div>
+  );
+};
 
-export default App
+export default App;

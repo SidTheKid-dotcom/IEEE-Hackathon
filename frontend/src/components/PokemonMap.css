@@ -1,0 +1,30 @@
+/* src/components/PokemonMap.css */
+.map-container {
+    position: relative;
+    width: 800px; /* Adjust the size as needed */
+    height: 600px; /* Adjust the size as needed */
+  }
+  
+  .map-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .highlight {
+    position: absolute;
+    border: 2px solid red;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
+  .tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    z-index: 100;
+  }
+  
+  
