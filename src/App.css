@@ -1,0 +1,13 @@
+/* src/styles/App.css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f4f4f9;
+}
+
+main {
+  padding-top: 4rem; /* Adjust based on the height of the navbar */
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
