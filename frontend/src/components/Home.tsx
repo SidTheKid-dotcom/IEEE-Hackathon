@@ -1,7 +1,9 @@
+// src/components/Home.tsx
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Select from 'react-select';
 import { getPokemons } from '../services/pokemonService';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Home: React.FC = () => {
   const [pokemons, setPokemons] = useState<any[]>([]);
@@ -26,6 +28,7 @@ const Home: React.FC = () => {
   ]);
   const observer = useRef<IntersectionObserver>();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const navigate = useNavigate(); // Add this line to use navigation
 
   const lastPokemonElementRef = useCallback(
     (node: any) => {
@@ -145,6 +148,10 @@ const Home: React.FC = () => {
     }
   };
 
+  const navigateToCamera = () => {
+    navigate('/camera');
+  };
+
   return (
     <div className="bg-white text-black font-sans">
       <div className="container mx-auto text-center py-8">
@@ -189,18 +196,18 @@ const Home: React.FC = () => {
                 onChange={(selectedOption) => setFilterStats({ ...filterStats, stat: selectedOption?.value || '' })}
                 options={stats}
                 placeholder="Select Stat"
-                className="w-1/2"
+                className="w-1/2 mr-2"
               />
               <input
                 type="number"
                 value={filterStats.value}
-                onChange={(e) => setFilterStats({ ...filterStats, value: Number(e.target.value) })}
-                placeholder="Min Value"
-                className="ml-2 w-1/2 pl-3 pr-10 py-1.5 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+                onChange={(e) => setFilterStats({ ...filterStats, value: parseInt(e.target.value) || 0 })}
+                placeholder="Value"
+                className="block w-1/2 pl-3 pr-10 py-1.5 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
               />
             </div>
           </div>
-          <div>
+          <div className="mr-4">
             <label className="block text-sm font-medium text-gray-700">Search</label>
             <input
               type="text"
@@ -260,6 +267,14 @@ const Home: React.FC = () => {
         className="fixed bottom-4 right-4 bg-red-500 text-white py-2 px-4 rounded-full shadow-lg focus:outline-none hover:bg-red-600"
       >
         {isPlaying ? 'Pause' : 'Play'}
+      </button>
+
+      {/* Toggle Camera Button */}
+      <button
+        onClick={navigateToCamera}
+        className="fixed bottom-20 right-4 bg-blue-500 text-white py-2 px-4 rounded-full shadow-lg focus:outline-none hover:bg-blue-600"
+      >
+        Open Camera
       </button>
     </div>
   );
