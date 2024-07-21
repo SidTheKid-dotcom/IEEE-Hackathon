@@ -8,6 +8,8 @@ const Home: React.FC = () => {
   const [nextUrl, setNextUrl] = useState<string | null>('https://pokeapi.co/api/v2/pokemon?limit=100');
   const [sortOption, setSortOption] = useState<string>('number');
   const [filterType, setFilterType] = useState<string>('');
+  const [filterAbility, setFilterAbility] = useState<string>('');
+  const [filterStats, setFilterStats] = useState<{ stat: string, value: number }>({ stat: '', value: null });
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchResult, setSearchResult] = useState<any | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -45,10 +47,29 @@ const Home: React.FC = () => {
   };
 
   const filterPokemons = (pokemons: any[]) => {
+    let filteredPokemons = pokemons;
+
     if (filterType) {
-      return pokemons.filter((pokemon) => pokemon.types.some((type: any) => type.type.name === filterType));
+      filteredPokemons = filteredPokemons.filter((pokemon) => 
+        pokemon.types?.some((type: any) => type.type.name === filterType)
+      );
     }
-    return pokemons;
+
+    if (filterAbility) {
+      filteredPokemons = filteredPokemons.filter((pokemon) =>
+        pokemon.abilities?.some((ability: any) => ability.ability.name === filterAbility)
+      );
+    }
+
+    if (filterStats.stat && filterStats.value > 0) {
+      filteredPokemons = filteredPokemons.filter((pokemon) =>
+        pokemon.stats?.some((stat: any) => 
+          stat.stat.name === filterStats.stat && stat.base_stat >= filterStats.value
+        )
+      );
+    }
+
+    return filteredPokemons;
   };
 
   const getVisiblePokemons = () => {
@@ -64,7 +85,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     setPokemons(getVisiblePokemons());
-  }, [allPokemons, sortOption, filterType]);
+  }, [allPokemons, sortOption, filterType, filterAbility, filterStats]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -124,6 +145,35 @@ const Home: React.FC = () => {
               className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
             />
           </div>
+          <div className="mr-4">
+            <label className="block text-sm font-medium text-gray-700">Filter by Ability</label>
+            <input
+              type="text"
+              value={filterAbility}
+              onChange={(e) => setFilterAbility(e.target.value.toLowerCase())}
+              placeholder="Ability (e.g., overgrow)"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+            />
+          </div>
+          <div className="mr-4">
+            <label className="block text-sm font-medium text-gray-700">Filter by Base Stat</label>
+            <div className="flex">
+              <input
+                type="text"
+                value={filterStats.stat}
+                onChange={(e) => setFilterStats({ ...filterStats, stat: e.target.value.toLowerCase() })}
+                placeholder="Stat (e.g., speed)"
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+              />
+              <input
+                type="number"
+                value={filterStats.value}
+                onChange={(e) => setFilterStats({ ...filterStats, value: Number(e.target.value) })}
+                placeholder="Min Value"
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+              />
+            </div>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Search</label>
             <input
@@ -158,7 +208,7 @@ const Home: React.FC = () => {
               const cardClass = "bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105 group";
               return (
                 <div
-                  key={pokemon.id}
+                  key={index}
                   className={cardClass}
                   ref={pokemons.length === index + 1 ? lastPokemonElementRef : null}
                 >
