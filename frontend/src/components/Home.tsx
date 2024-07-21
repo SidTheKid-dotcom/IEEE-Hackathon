@@ -152,6 +152,10 @@ const Home: React.FC = () => {
     navigate('/camera');
   };
 
+  const navigateToPokemon = (id: number) => {
+    navigate(`/pokemon/${id}`);
+  }
+
   return (
     <div className="bg-white text-black font-sans">
       <div className="container mx-auto text-center py-8">
@@ -225,7 +229,7 @@ const Home: React.FC = () => {
           </div>
         </div>
         {searchResult ? (
-          <div className="grid grid-cols-1 gap-6 mb-8">
+          <div className="grid grid-cols-1 gap-6 mb-8" onClick={() => navigateToPokemon(searchResult.id)}>
             <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105 group">
               <div className="w-24 h-24 mx-auto relative group">
                 <img className="w-full h-full object-contain group-hover:animate-wiggle" src={searchResult.sprites.front_default} alt={searchResult.name} />
@@ -244,6 +248,7 @@ const Home: React.FC = () => {
                   key={pokemon.id}
                   className={cardClass}
                   ref={pokemons.length === index + 1 ? lastPokemonElementRef : null}
+                  onClick={() => navigateToPokemon(pokemon.id)}
                 >
                   <div className="w-24 h-24 mx-auto relative group">
                     <img className="w-full h-full object-contain group-hover:animate-wiggle" src={pokemon.sprites.front_default} alt={pokemon.name} />
