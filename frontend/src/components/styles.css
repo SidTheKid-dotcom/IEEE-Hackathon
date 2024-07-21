@@ -34,7 +34,7 @@ body {
     background: linear-gradient(to bottom, #78c850 0%, #fff 100%); /* Example gradient */
     perspective: 1000px; /* Added perspective for 3D effect */
     position: relative;
-    overflow-y: auto; /* Make card scrollable vertically */
+   /*  overflow-y: auto; */ /* Make card scrollable vertically */
     overflow-x: hidden; /* Hide horizontal overflow */
 }
 

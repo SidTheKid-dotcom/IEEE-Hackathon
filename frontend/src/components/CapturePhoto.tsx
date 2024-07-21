@@ -1,9 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CameraCaptureUpload: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [uploadStatus, setUploadStatus] = useState<string>('');
+
+  const navigate = useNavigate();
 
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
@@ -22,12 +25,6 @@ const CameraCaptureUpload: React.FC = () => {
         const formData = new FormData();
         formData.append('file', blob, 'photo.jpg');
 
-        // Example of how to set file input with state (not allowed directly)
-        // const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-        // if (fileInput) {
-        //   fileInput.files = new FileList([blob], 'photo.jpg');
-        // }
-
         // Call function to upload file
         uploadFile(formData);
       }
@@ -42,8 +39,10 @@ const CameraCaptureUpload: React.FC = () => {
       });
 
       if (response.ok) {
-        const responseData = await response.text();
-        setUploadStatus(responseData);
+        console.log('hereeree ')
+        const responseData = await response.json();
+        setUploadStatus('File uploaded successfully');
+        navigate(`/pokemon/${responseData.pokemonId}`);
       } else {
         setUploadStatus('File upload failed');
       }
@@ -63,7 +62,7 @@ const CameraCaptureUpload: React.FC = () => {
     return new Blob([ab], { type: mimeString });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Access the camera
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {

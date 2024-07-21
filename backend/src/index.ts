@@ -357,12 +357,16 @@ app.post("/upload", upload.single("file"), async (req: AuthRequest, res: Respons
           fileUri: uploadResponse.file.uri,
         },
       },
-      { text: "Guess the pokemon name only" },
+      { text: "Guess the pokemon id only, just give me the id and nothing else should be in the response" },
     ]);
 
+    const pokemonId = result.response.text();
     console.log(result.response.text());
 
-    res.send(`File uploaded successfully: ${req.file.filename}`);
+    res.json({
+        message: `File uploaded successfully: ${req.file.filename}`,
+        pokemonId: pokemonId
+    })
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("An error occurred during file upload");
