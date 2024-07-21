@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-      <div>{count}</div>
+      <div className='bg-red-500'>{count}</div>
     </>
   )
 }
