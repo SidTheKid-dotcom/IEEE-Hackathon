@@ -1,0 +1,22 @@
+.pokemon-location {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+}
+
+.pokemon-location h2 {
+    font-size: 2em;
+    color: #ffcb05; 
+}
+
+.pokemon-location ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.pokemon-location li {
+    font-size: 1.2em;
+    color:black;
+    font-weight: bold;
+    margin: 5px 0;
+}

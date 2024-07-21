@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './PokemonMap.css';
 
-// Define interfaces for location areas and encounters
 interface LocationArea {
     name: string;
     url: string;
@@ -10,7 +9,7 @@ interface LocationArea {
 
 interface Encounter {
     location_area: LocationArea;
-    version_details: any[];
+    version_details: unknown[];
 }
 
 interface PokemonDetails {
@@ -47,7 +46,6 @@ const PokemonMap: React.FC<PokemonMapProps> = ({ pokemonId }) => {
                             setPokemonRegion(speciesResponse.data.generation.name);
                         }
                     }
-                    console.log(encountersResponse.data);
                 } else {
                     console.error('Pokemon data not found:', response.data);
                 }
@@ -59,51 +57,76 @@ const PokemonMap: React.FC<PokemonMapProps> = ({ pokemonId }) => {
         fetchPokemonDetails();
     }, [pokemonId]);
 
-    const getMarkerIcon = (locationAreaName: string): string | null => {
-        // Example mapping of marker icons/images for different regions
-        const markerIcons: { [key: string]: string } = {
-            'pallet-town-area': '/public/marker_icon.png',
-            'cerulean-city-area': '/public/marker_icon.png',
-            // Add more mappings for other locations in this region
-        };
+    const markerIconsByGeneration: { [key: string]: { [key: string]: string } } = {
+        'generation-i': {
+            'pallet-town-area': 'marker_icon.png',
+            'viridian-city-area': '/public/marker_icon.png',
+            // Add other Generation I locations
+        },
+        'generation-ii': {
+            'new-bark-town-area': '/public/marker_icon.png',
+            'cherrygrove-city-area': '/public/marker_icon.png',
+            // Add other Generation II locations
+        },
+        'generation-iii': {
+            'littleroot-town-area': '/public/marker_icon.png',
+            'oldale-town-area': '/public/marker_icon.png',
+            // Add other Generation III locations
+        },
+        // Add other generations as needed
+    };
 
-        // Return null if locationAreaName is not found in markerIcons
-        return markerIcons[locationAreaName] || null;
+    const locationStylesByGeneration: { [key: string]: { [key: string]: { top: string; left: string } } } = {
+        'generation-i': {
+            'pallet-town-area': { top: '68%', left: '18%' },
+            'viridian-city-area': { top: '75%', left: '7%' },
+            // Add other Generation I locations
+        },
+        'generation-ii': {
+            'new-bark-town-area': { top: '80%', left: '92%' },
+            'cherrygrove-city-area': { top: '75%', left: '84%' },
+            // Add other Generation II locations
+        },
+        'generation-iii': {
+            'littleroot-town-area': { top: '85%', left: '22%' },
+            'oldale-town-area': { top: '79%', left: '32%' },
+            // Add other Generation III locations
+        },
+        // Add other generations as needed
+    };
+
+    const getMarkerIcon = (locationAreaName: string): string | null => {
+        const generationIcons = markerIconsByGeneration[pokemonRegion];
+        return generationIcons ? generationIcons[locationAreaName] || null : null;
     };
 
     const getHighlightStyle = (locationAreaName: string): { top: string; left: string } => {
-        // Example mapping of location styles for different regions
-        const locationStyles: { [key: string]: { top: string; left: string } } = {
-            'pallet-town-area': { top: '78%', left: '28%' },
-            'cerulean-city-area': { top: '17%', left: '61%' },
-            // Add more mappings for other locations in this region
-        };
-
-        // Default position if location not found
-        return locationStyles[locationAreaName] || { top: '0', left: '0' };
+        const generationStyles = locationStylesByGeneration[pokemonRegion];
+        return generationStyles ? generationStyles[locationAreaName] || { top: '0', left: '0' } : { top: '0', left: '0' };
     };
 
     return (
         <div className="map-container">
             {pokemonRegion && <h2>{pokemonRegion} Region</h2>}
             {pokemonName && <h3>{pokemonName}</h3>}
-            {/* Render the map image based on the fetched region */}
-            {pokemonRegion && <img src={`/${pokemonRegion}_Map.png`} alt={`${pokemonRegion} Region Map`} className="map-image" />}
+            
+            {pokemonRegion && <img src={`/${pokemonRegion}_Map.jpg`} alt={`${pokemonRegion} Region Map`} className="map-image" />}
             {encounters.map((encounter, index) => {
                 const markerIcon = getMarkerIcon(encounter.location_area.name);
                 const style = getHighlightStyle(encounter.location_area.name);
-                // Only render marker if markerIcon exists
                 if (markerIcon) {
                     return (
-                        <img
-                            key={index}
-                            src={markerIcon}
-                            alt={encounter.location_area.name}
-                            style={{ position: 'absolute', top: style.top, left: style.left, width: '32px', height: '32px' }}
-                        />
+                        <div key={index} style={{ position: 'absolute', top: style.top, left: style.left, textAlign: 'center' }}>
+                            <img
+                                src={markerIcon}
+                                alt={encounter.location_area.name}
+                                style={{ width: '32px', height: '32px' }}
+                            />
+                            <div className="location_name">{encounter.location_area.name}</div>
+                        </div>
                     );
                 }
-                return null; // Render nothing if markerIcon is null
+                return null;
             })}
         </div>
     );
