@@ -1,4 +1,3 @@
-// src/components/LandingPage.tsx
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { getPokemons } from '../services/pokemonService';
 import axios from 'axios';
@@ -11,7 +10,9 @@ const Home: React.FC = () => {
   const [filterType, setFilterType] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchResult, setSearchResult] = useState<any | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const observer = useRef<IntersectionObserver>();
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const lastPokemonElementRef = useCallback(
     (node: any) => {
@@ -65,6 +66,12 @@ const Home: React.FC = () => {
     setPokemons(getVisiblePokemons());
   }, [allPokemons, sortOption, filterType]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause(); // Start with audio paused
+    }
+  }, []);
+
   const handleSearch = async () => {
     if (searchQuery.trim() === '') {
       setSearchResult(null);
@@ -77,6 +84,17 @@ const Home: React.FC = () => {
     } catch (error) {
       setSearchResult(null);
       console.error('Pokemon not found', error);
+    }
+  };
+
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
     }
   };
 
@@ -126,7 +144,9 @@ const Home: React.FC = () => {
         {searchResult ? (
           <div className="grid grid-cols-1 gap-6 mb-8">
             <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105">
-              <img className="w-24 h-24 mx-auto" src={searchResult.sprites.front_default} alt={searchResult.name} />
+              <div className="w-24 h-24 mx-auto relative group">
+                <img className="w-full h-full object-contain group-hover:animate-wiggle" src={searchResult.sprites.front_default} alt={searchResult.name} />
+              </div>
               <h2 className="text-xl font-semibold mt-2 capitalize">{searchResult.name}</h2>
               <p className="text-gray-600">#{searchResult.id}</p>
               <p className="text-gray-600">Type: {searchResult.types.map((type: any) => type.type.name).join(', ')}</p>
@@ -135,36 +155,36 @@ const Home: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {pokemons.map((pokemon, index) => {
-              if (pokemons.length === index + 1) {
-                return (
-                  <div
-                    key={pokemon.id}
-                    ref={lastPokemonElementRef}
-                    className="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105"
-                  >
-                    <img className="w-24 h-24 mx-auto" src={pokemon.sprites.front_default} alt={pokemon.name} />
-                    <h2 className="text-xl font-semibold mt-2 capitalize">{pokemon.name}</h2>
-                    <p className="text-gray-600">#{pokemon.id}</p>
-                    <p className="text-gray-600">Type: {pokemon.types.map((type: any) => type.type.name).join(', ')}</p>
+              const cardClass = "bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105 group";
+              return (
+                <div
+                  key={pokemon.id}
+                  className={cardClass}
+                  ref={pokemons.length === index + 1 ? lastPokemonElementRef : null}
+                >
+                  <div className="w-24 h-24 mx-auto relative group">
+                    <img className="w-full h-full object-contain group-hover:animate-wiggle" src={pokemon.sprites.front_default} alt={pokemon.name} />
                   </div>
-                );
-              } else {
-                return (
-                  <div
-                    key={pokemon.id}
-                    className="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105"
-                  >
-                    <img className="w-24 h-24 mx-auto" src={pokemon.sprites.front_default} alt={pokemon.name} />
-                    <h2 className="text-xl font-semibold mt-2 capitalize">{pokemon.name}</h2>
-                    <p className="text-gray-600">#{pokemon.id}</p>
-                    <p className="text-gray-600">Type: {pokemon.types.map((type: any) => type.type.name).join(', ')}</p>
-                  </div>
-                );
-              }
+                  <h2 className="text-xl font-semibold mt-2 capitalize">{pokemon.name}</h2>
+                  <p className="text-gray-600">#{pokemon.id}</p>
+                  <p className="text-gray-600">Type: {pokemon.types.map((type: any) => type.type.name).join(', ')}</p>
+                </div>
+              );
             })}
           </div>
         )}
       </div>
+
+      {/* Audio element for background music */}
+      <audio ref={audioRef} src="/base_audio.mp3" loop />
+
+      {/* Play/Pause Button */}
+      <button
+        onClick={togglePlayPause}
+        className="fixed bottom-4 right-4 bg-red-500 text-white py-2 px-4 rounded-full shadow-lg focus:outline-none hover:bg-red-600"
+      >
+        {isPlaying ? 'Pause' : 'Play'}
+      </button>
     </div>
   );
 };
