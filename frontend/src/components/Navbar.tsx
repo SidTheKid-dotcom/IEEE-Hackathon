@@ -12,7 +12,7 @@ const Navbar = () => {
     {name:'Buddy Pokemon',route: '/buddyPokemon'},
    
     {name:'PokeCam',route:'/camera'},
-    { name: 'Documentation', route: '/docs' },
+    { name: 'Documentation', route: 'https://ieee-hackathon-docs.vercel.app/' },
   ];
 
   return (
