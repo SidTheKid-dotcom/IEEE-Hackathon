@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import PokemonMap from './PokemonMap';
+import PokemonLocation from './PokemonLocation';
 
 interface PokemonData {
   id: number;
@@ -114,70 +116,76 @@ const PokemonCardWrapper: React.FC = () => {
   }[pokemonData.types[0].type.name] || 'bg-gray-500'; // Default Gray
 
   return (
-    <div className="flex justify-center items-center h-screen w-screen bg-gray-100 cursor-none">
-      <div className={`border-2 border-gray-300 rounded-lg shadow-lg w-full max-w-4xl h-auto flex flex-col p-5 bg-gradient-to-b ${typeColor} to-white overflow-hidden`}>
-        <div className="text-center mb-5">
-          <h2 className={`text-4xl font-bold capitalize mb-2 animate-typing font-[Decotura]`}>{pokemonData.name.charAt(0).toUpperCase() + pokemonData.name.slice(1)}</h2>
-          <div className={`inline-block py-1 px-3 rounded text-black text-lg font-bold capitalize ${typeColor}`}>
-            {pokemonData.types[0].type.name}
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="flex-1 flex flex-col text-lg relative">
-            <p className="mb-1">ID: {pokemonData.id}</p>
-            <p className="mb-1">Height: {pokemonData.height}</p>
-            <p className="mb-1">Weight: {pokemonData.weight}</p>
-            <p className="mb-1">Abilities: {pokemonData.abilities.map(ability => ability.ability.name).join(', ')}</p>
-            <p>Forms: {pokemonData.forms.map(form => form.name).join(', ')}</p>
+    <div className='flex flex-col items-center justify-center'>
+      <div className="flex justify-center items-center h-screen w-screen bg-gray-100 cursor-none">
+        <div className={`border-2 border-gray-300 rounded-lg shadow-lg w-full max-w-4xl h-auto flex flex-col p-5 bg-gradient-to-b ${typeColor} to-white overflow-hidden`}>
+          <div className="text-center mb-5">
+            <h2 className={`text-4xl font-bold capitalize mb-2 animate-typing font-[Decotura]`}>{pokemonData.name.charAt(0).toUpperCase() + pokemonData.name.slice(1)}</h2>
+            <div className={`inline-block py-1 px-3 rounded text-black text-lg font-bold capitalize ${typeColor}`}>
+              {pokemonData.types[0].type.name}
+            </div>
           </div>
 
-          <div className="flex-1 flex justify-center items-center my-5 md:my-0">
-            <img src={pokemonData.sprites.other['official-artwork'].front_default} alt={pokemonData.name} className="w-64 object-contain" />
-          </div>
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex-1 flex flex-col text-lg relative">
+              <p className="mb-1">ID: {pokemonData.id}</p>
+              <p className="mb-1">Height: {pokemonData.height}</p>
+              <p className="mb-1">Weight: {pokemonData.weight}</p>
+              <p className="mb-1">Abilities: {pokemonData.abilities.map(ability => ability.ability.name).join(', ')}</p>
+              <p>Forms: {pokemonData.forms.map(form => form.name).join(', ')}</p>
+            </div>
 
-          <div className="flex-1 flex flex-col items-start pl-5 relative">
-            {pokemonData.stats.map((stat) => (
-              <div key={stat.stat.name} className="flex items-center mb-2 w-full">
-                <div className="w-1/4 text-lg capitalize">{stat.stat.name}</div>
-                <div className="flex-1 h-4 bg-gray-300 rounded overflow-hidden ml-2">
-                  <div className="stat-bar-inner h-full bg-green-500 text-center text-white font-bold text-xs transition-all"></div>
+            <div className="flex-1 flex justify-center items-center my-5 md:my-0">
+              <img src={pokemonData.sprites.other['official-artwork'].front_default} alt={pokemonData.name} className="w-64 object-contain" />
+            </div>
+
+            <div className="flex-1 flex flex-col items-start pl-5 relative">
+              {pokemonData.stats.map((stat) => (
+                <div key={stat.stat.name} className="flex items-center mb-2 w-full">
+                  <div className="w-1/4 text-lg capitalize">{stat.stat.name}</div>
+                  <div className="flex-1 h-4 bg-gray-300 rounded overflow-hidden ml-2">
+                    <div className="stat-bar-inner h-full bg-green-500 text-center text-white font-bold text-xs transition-all"></div>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-center items-center mt-5">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                className={`text-3xl cursor-pointer mx-1 ${hover !== null && hover >= star || rating >= star ? 'text-yellow-500' : 'text-gray-300'} ${rating >= star ? 'text-yellow-500' : ''}`}
+                onMouseEnter={() => setHover(star)}
+                onMouseLeave={() => setHover(null)}
+                onClick={() => handleRating(star)}
+              >
+                ★
+              </span>
             ))}
           </div>
-        </div>
 
-        <div className="flex justify-center items-center mt-5">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              className={`text-3xl cursor-pointer mx-1 ${hover !== null && hover >= star || rating >= star ? 'text-yellow-500' : 'text-gray-300'} ${rating >= star ? 'text-yellow-500' : ''}`}
-              onMouseEnter={() => setHover(star)}
-              onMouseLeave={() => setHover(null)}
-              onClick={() => handleRating(star)}
-            >
-              ★
-            </span>
-          ))}
-        </div>
-
-        <div className="flex flex-col items-center mt-5">
-          <button onClick={handlePlaySound} className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">Play Sound</button>
-          <textarea
-            value={comments}
-            onChange={(e) => setComments(e.target.value)}
-            placeholder="Leave a comment..."
-            className="w-4/5 max-w-lg h-20 p-2 border border-gray-300 rounded resize-none mt-4"
-          />
-          <button onClick={handleCommentSubmit} className="mt-2 py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600">Submit</button>
-          <div className="w-4/5 max-w-lg mt-4">
-            {commentList.map((comment, index) => (
-              <p key={index} className="bg-gray-100 p-2 rounded mb-2">{comment}</p>
-            ))}
+          <div className="flex flex-col items-center mt-5">
+            <button onClick={handlePlaySound} className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">Play Sound</button>
+            <textarea
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              placeholder="Leave a comment..."
+              className="w-4/5 max-w-lg h-20 p-2 border border-gray-300 rounded resize-none mt-4"
+            />
+            <button onClick={handleCommentSubmit} className="mt-2 py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600">Submit</button>
+            <div className="w-4/5 max-w-lg mt-4">
+              {commentList.map((comment, index) => (
+                <p key={index} className="bg-gray-100 p-2 rounded mb-2">{comment}</p>
+              ))}
+            </div>
           </div>
+          <audio ref={audioRef} src={soundUrl || ''} preload="auto" />
         </div>
-        <audio ref={audioRef} src={soundUrl || ''} preload="auto" />
+      </div>
+      <div className='flex flex-row'>
+        <PokemonMap pokemonId={Number(params.id)} />
+        <PokemonLocation pokemonId={Number(params.id)} />
       </div>
     </div>
   );
