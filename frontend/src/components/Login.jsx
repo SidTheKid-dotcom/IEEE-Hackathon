@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+
+import { useNavigate } from 'react-router-dom';
 // import './LoginPage.css'; // Ensure this file includes any additional custom styles
 
 const LoginPage = () => {
+
+  const navigate = useNavigate();
+
   const [formType, setFormType] = useState('login');
   const [formData, setFormData] = useState({
     username: '',
@@ -28,7 +34,54 @@ const LoginPage = () => {
       return;
     }
 
-    alert(`${formType === 'login' ? 'Login' : 'Sign Up'} form submitted!`);
+    if (formType === 'login') {
+      const loginRequest = async () => {
+        try {
+          const response = await axios.post('http://localhost:3010/signin', {
+            email: formData.email,
+            password: formData.password
+          }, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = response.data;
+          console.log(data);
+
+          localStorage.setItem('token', JSON.stringify(`Bearer ${data.token}`));
+          navigate('/');
+
+        } catch (error) {
+          console.error('Error logging in:', error);
+        }
+      };
+
+      loginRequest();
+    } else if (formType === 'signup') {
+      // Perform signup logic here
+      const registerRequest = async () => {
+        try {
+          const response = await axios.post('http://localhost:3010/signup', {
+            username: formData.email,
+            email: formData.email,
+            password: formData.password
+          }, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = response.data;
+          console.log(data);
+          
+          localStorage.setItem('token', JSON.stringify(`Bearer ${data.token}`));
+          navigate('/');
+        } catch (error) {
+          console.error('Error logging in:', error);
+        }
+      };
+
+      registerRequest();
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -54,82 +107,82 @@ const LoginPage = () => {
         <form onSubmit={handleSubmit}>
           {formType === 'signup' && (
             <div className="mb-4">
-              <input 
-                type="text" 
-                name="username" 
-                placeholder="Username" 
-                value={formData.username} 
-                onChange={handleChange} 
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-yellow-500 transition-colors"
-                required 
+                required
               />
             </div>
           )}
           <div className="mb-4">
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Email" 
-              value={formData.email} 
-              onChange={handleChange} 
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-yellow-500 transition-colors"
-              required 
+              required
             />
           </div>
           <div className="mb-4 relative">
-            <input 
-              type={showPassword ? "text" : "password"} 
-              name="password" 
-              placeholder="Password" 
-              value={formData.password} 
-              onChange={handleChange} 
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-yellow-500 transition-colors"
-              required 
+              required
             />
-            <button 
-              type="button" 
-              onClick={togglePasswordVisibility} 
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
             >
-              {showPassword ? 
+              {showPassword ?
                 <img src="../../public/images/openball.png" height='20' width='20' alt="openball" /> :
-                <img src='../../public/images/Pokeball.png' height='20' width='20' alt="pokeball" />  
+                <img src='../../public/images/Pokeball.png' height='20' width='20' alt="pokeball" />
               }
             </button>
           </div>
           {formType === 'signup' && (
             <div className="mb-4 relative">
-              <input 
-                type={showPassword ? "text" : "password"} 
-                name="confirmPassword" 
-                placeholder="Confirm Password" 
-                value={formData.confirmPassword} 
-                onChange={handleChange} 
+              <input
+                type={showPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-yellow-500 transition-colors"
-                required 
+                required
               />
-              <button 
-                type="button" 
-                onClick={togglePasswordVisibility} 
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
               >
-                {showPassword ? 
+                {showPassword ?
                   <img src="../../public/images/openball.png" height='20' width='20' alt="openball" /> :
-                  <img src='../../public/images/Pokeball.png' height='20' width='20' alt="pokeball" />  
+                  <img src='../../public/images/Pokeball.png' height='20' width='20' alt="pokeball" />
                 }
               </button>
             </div>
           )}
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="w-full p-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:bg-yellow-600 transition-colors"
           >
             {formType === 'login' ? 'Login' : 'Sign Up'}
           </button>
         </form>
         <div className="mt-4 text-center">
-          <button 
-            onClick={switchFormType} 
+          <button
+            onClick={switchFormType}
             className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600 transition-colors"
           >
             {formType === 'login' ? 'Create an Account' : 'Already have an account? Login'}

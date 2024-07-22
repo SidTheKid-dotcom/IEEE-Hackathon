@@ -38,20 +38,20 @@ app.get('/', async (req: Request, res: Response) => {
 
 // Route: Sign up
 app.post('/signup', async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await prisma.user.create({
             data: {
+                username,
                 email,
                 password: hashedPassword,
-                buddy_pokemon: 0,
             },
         });
 
-        const isLuckyUserID = String(user.id).split('').every(char => char === '7');
+        /* const isLuckyUserID = String(user.id).split('').every(char => char === '7');
         const starterPokemonIds: number[] = process.env.STARTER_POKEMON_IDS?.split(',').map(Number) || [];
 
         const buddyPokemon = isLuckyUserID ? 25 : (starterPokemonIds.length > 0
@@ -61,7 +61,7 @@ app.post('/signup', async (req: Request, res: Response) => {
         await prisma.user.update({
             where: { id: user.id },
             data: { buddy_pokemon: buddyPokemon },
-        });
+        }); */
 
         const token = jwt.sign({ userID: user.id }, JWT_SECRET_KEY);
 
@@ -82,7 +82,11 @@ app.post('/signin', async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'User not found' });
         }
 
+        console.log(user);
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        console.log(isPasswordValid);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Incorrect password' });
         }
