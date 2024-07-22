@@ -8,11 +8,11 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigationRoutes = [
-    { name: 'Search', route: '/search' },
-    { name: 'Dex Mode', route: '/dex-mode' },
-    { name: 'Profile', route: '/profile' },
-    { name: 'List', route: '/list' },
-    { name: 'About', route: '/about' },
+    { name: 'Search', route: '/' },
+    {name:'Buddy Pokemon',route: '/buddyPokemon'},
+   
+    {name:'PokeCam',route:'/camera'},
+    { name: 'Documentation', route: '/docs' },
   ];
 
   return (
