@@ -4,21 +4,27 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import authMiddleware from './authMiddleware';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 // Load environment variables from .env file
 dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3010;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY as string;
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string;
 
 interface AuthRequest extends Request {
     userID?: number;
 }
 
+// Use CORS middleware
+app.use(cors());
+
 // Middleware to parse JSON request bodies
-app.use(express.json());
+app.use(bodyParser.json({ limit: '10mb' }));
 
 // Route: Get all users
 app.get('/', async (req: Request, res: Response) => {
@@ -32,20 +38,20 @@ app.get('/', async (req: Request, res: Response) => {
 
 // Route: Sign up
 app.post('/signup', async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await prisma.user.create({
             data: {
+                username,
                 email,
                 password: hashedPassword,
-                buddy_pokemon: 0,
             },
         });
 
-        const isLuckyUserID = String(user.id).split('').every(char => char === '7');
+        /* const isLuckyUserID = String(user.id).split('').every(char => char === '7');
         const starterPokemonIds: number[] = process.env.STARTER_POKEMON_IDS?.split(',').map(Number) || [];
 
         const buddyPokemon = isLuckyUserID ? 25 : (starterPokemonIds.length > 0
@@ -55,7 +61,7 @@ app.post('/signup', async (req: Request, res: Response) => {
         await prisma.user.update({
             where: { id: user.id },
             data: { buddy_pokemon: buddyPokemon },
-        });
+        }); */
 
         const token = jwt.sign({ userID: user.id }, JWT_SECRET_KEY);
 
@@ -76,7 +82,11 @@ app.post('/signin', async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'User not found' });
         }
 
+        console.log(user);
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        console.log(isPasswordValid);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Incorrect password' });
         }
@@ -295,6 +305,76 @@ app.delete('/deleteComment/:commentId', authMiddleware, async (req: AuthRequest,
     } catch (error) {
         res.status(500).json({ message: 'Error deleting comment', error: (error as Error).message });
     }
+});
+
+import multer from "multer";
+import path from "path";
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
+import { GoogleAIFileManager } from "@google/generative-ai/server";
+
+// Initialize GoogleGenerativeAI with your API_KEY.
+const genAI = new GoogleGenerativeAI("AIzaSyBPDAulhDgCKGr8ugym1dz9mByBk7QWBHo");
+
+const model: GenerativeModel = genAI.getGenerativeModel({
+  // Choose a Gemini model.
+  model: "gemini-1.5-flash",
+});
+
+// Initialize GoogleAIFileManager with your API_KEY.
+const fileManager = new GoogleAIFileManager(
+  "AIzaSyBPDAulhDgCKGr8ugym1dz9mByBk7QWBHo"
+);
+
+// Configure storage for Multer
+const storage = multer.diskStorage({
+    destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+      cb(null, path.join(__dirname, 'uploads/')); // Adjust path to your uploads directory
+    },
+    filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+      cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to file original name
+    },
+  });
+
+// Initialize upload variable with storage configuration
+const upload = multer({ storage: storage });
+
+// Create an endpoint for file upload
+app.post("/upload", upload.single("file"), async (req: AuthRequest, res: Response) => {
+
+  if (!req.file) {
+    return res.status(400).send("No file uploaded");
+  }
+
+  const filePath = req.file.path;
+  const fileOptions = {
+    mimeType: req.file.mimetype,
+    displayName: req.file.originalname,
+  };
+
+  try {
+    const uploadResponse = await fileManager.uploadFile(filePath, fileOptions);
+
+    const result = await model.generateContent([
+      {
+        fileData: {
+          mimeType: uploadResponse.file.mimeType,
+          fileUri: uploadResponse.file.uri,
+        },
+      },
+      { text: "Guess the pokemon id only, just give me the id and nothing else should be in the response" },
+    ]);
+
+    const pokemonId = result.response.text();
+    console.log(result.response.text());
+
+    res.json({
+        message: `File uploaded successfully: ${req.file.filename}`,
+        pokemonId: pokemonId
+    })
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("An error occurred during file upload");
+  }
 });
 
 // Start the server

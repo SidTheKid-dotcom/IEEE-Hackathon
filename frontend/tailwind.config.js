@@ -15,7 +15,18 @@ module.exports = {
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      keyframes: {
+        wiggle: {
+          '0%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+          '100%': { transform: 'rotate(-3deg)' },
+        },
+      },
+      animation: {
+        wiggle: 'wiggle 0.5s ease-in-out infinite',
+      },
+    },
   },
   plugins: [],
 };

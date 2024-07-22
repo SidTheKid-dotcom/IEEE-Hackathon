@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+.done{
+    top: calc(50% - 6.7rem);
+    left: calc(50% - 6.7rem);
+    background: linear-gradient(to left,rgb(20, 20, 20),rgb(182, 168, 168));
+}
+
+#none{
+    background: linear-gradient(rgb(179, 101, 101) ,rgb(209, 174, 174));
+}
+
+.bone {
+    display: inline-block;
+    text-decoration: none;
+    margin: 10px;
+    font-size: 16px;
+    color: #333;
+    background-color: #fff;
+    border: 2px solid #333;
+    border-radius: 4px;
+    text-align: center;
+    text-decoration: none;
+    overflow: hidden;
+    /* position: relative; */
+    /* display: none; */
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.bone {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.fin:hover{
+   animation: find 1s ease-in infinite forwards;
+}
+
+@keyframes find {
+   0%{
+    transform: rotateX('0');
+   } 
+   100%{
+    transform: rotateX('360');
+   }
+}
+/* .ash{
+    background-color: aquamarine;
+    background-color: red;
+    background-image: url(/public/assets/images/back.png);
+ 
+} */
