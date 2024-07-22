@@ -1,0 +1,87 @@
+.header {
+  background-color: #282c34;
+  padding: 1rem;
+  color: white;
+  position: relative;
+}
+
+.header nav {
+  display: flex;
+  justify-content: center;
+}
+
+.header nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-size: 1.2rem;
+}
+
+.header nav a:hover,
+.header nav a.active {
+  text-decoration: underline;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10; /* Ensure the hamburger is above other elements */
+}
+
+.hamburger div {
+  width: 2rem;
+  height: 0.25rem;
+  background: white;
+  border-radius: 10px;
+  transition: all 0.3s linear;
+  position: relative;
+  transform-origin: 1px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header nav {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background-color: #282c34; /* Match the header background */
+    width: 100%;
+    padding: 1rem;
+    position: absolute;
+    top: 3.5rem; /* Place below the header */
+    left: 0;
+    display: none; /* Hide the nav by default on small screens */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add some shadow for depth */
+    border-radius: 0 0 10px 10px; /* Rounded bottom corners */
+  }
+
+  .header nav.open {
+    display: flex; /* Show the nav when the menu is open */
+    transition: all 0.3s ease-in-out; /* Smooth transition */
+  }
+
+  .header nav a {
+    margin: 1rem 0; /* Increase vertical spacing */
+    font-size: 1.5rem; /* Increase font size */
+    width: 100%; /* Full width links */
+    text-align: left; /* Align text to the left */
+    padding-left: 1rem; /* Padding for alignment */
+  }
+
+  .hamburger {
+    display: flex;
+    margin-left: 1rem;
+  }
+}
