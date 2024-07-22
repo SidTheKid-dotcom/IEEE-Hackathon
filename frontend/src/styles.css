@@ -1,245 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Decotura&display=swap');
+/* Add the following at the beginning of your CSS file to import Tailwind CSS */
+@import 'tailwindcss/tailwind.css';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
-body {
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-    cursor: none; /* Hide the cursor */
-}
 
-.pokemon-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden; /* Hide overflow to make sure scrollbar is only inside the card */
-}
-
-.pokemon-card {
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    box-sizing: border-box;
-    background: linear-gradient(to bottom, #78c850 0%, #fff 100%); /* Example gradient */
-    perspective: 1000px; /* Added perspective for 3D effect */
-    position: relative;
-    overflow-y: hidden; /* Make card scrollable vertically */
-    overflow-x: hidden; /* Hide horizontal overflow */
-}
-
-.top-section {
-    text-align: center;
-    margin-bottom: 20px; /* Add some margin to the bottom */
-}
-
-.top-section h2 {
-    margin: 0;
-    font-size: 4vw; /* Responsive font size */
-    overflow: hidden;
-    white-space: nowrap;
-    margin: 0 auto;
-    letter-spacing: 0.15em;
-    animation: typing 3.5s steps(40, end);
-    font-family: 'Decotura', cursive;
-    text-transform: capitalize;
-}
-
-.type {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 1.5vw; /* Smaller font size */
-    color: #fff;
-    text-transform: capitalize;
-    font-weight: bold;
-}
-
+/* Custom animations and type colors */
 @keyframes typing {
-    from { width: 0 }
-    to { width: 100% }
-}
-
-.slide-in {
-    opacity: 0;
-    transform: translateX(-100%);
-    animation: slide-in 1s forwards;
+  from { width: 0 }
+  to { width: 100% }
 }
 
 @keyframes slide-in {
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+  0% { opacity: 0; transform: translateX(-100%); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
-.main-section {
-    display: flex;
-    flex: 1;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
-    perspective: 1000px; /* Added perspective for 3D effect */
+@keyframes slide-in-3d {
+  0% { opacity: 0; transform: translateX(-100%) rotateY(35deg); }
+  100% { opacity: 1; transform: translateX(0) rotateY(0); }
 }
 
-.details {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    transform: rotateY(35deg); /* Apply rotation */
-    transform-origin: left center; /* Adjust origin for rotation */
-    position: relative;
+.typing {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 3.5s steps(40, end);
+  font-family: 'Decotura', cursive;
 }
 
-.details p {
-    margin: 5px 0;
-    font-size: 2vw; /* Responsive font size */
-    transform: rotateY(-35deg); /* Apply reverse rotation to counteract */
+.slide-in {
+  animation: slide-in 1s forwards;
 }
 
-.image-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.pokemon-card img {
-    width: 20vw; /* Slightly reduced size of the image */
-    height: auto;
-    object-fit: contain;
-}
-
-.stats {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding-left: 2vw; /* Adjusted padding to position stats */
-    transform: rotateY(-35deg); /* Rotate stats by -35 degrees to counteract rotation */
-    transform-origin: right center; /* Adjust origin for rotation */
-    perspective: 500px; /* Perspective for 3D effect */
-}
-
-.stat {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1vw;
-    width: 100%;
-}
-
-.stat-name {
-    width: 10vw;  /* Adjusted width */
-    text-transform: capitalize;
-    font-size: 1.5vw; /* Responsive font size */
-}
-
-.stat-bar {
-    flex: 1;
-    height: 1.5vw;
-    background-color: #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-    position: relative;
-    margin-left: 1vw;
+.slide-in-3d {
+  animation: slide-in-3d 1s forwards;
 }
 
 .stat-bar-inner {
-    height: 100%;
-    background-color: #4caf50;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: bold;
-    font-size: 1.2vw;
-    width: 0%; /* Start with width 0% */
-    transition: width 1s ease-out; /* Smooth width transition */
-    background-image: linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.3) 75%, transparent 75%, transparent);
-    background-size: 20px 20px;
+  transition: width 1s ease-out;
 }
 
-.pokemon-card .type.grass {
-    background-color: #78c850;
-}
-
-.pokemon-card .type.fire {
-    background-color: #f08030;
-}
-
-.pokemon-card .type.water {
-    background-color: #6890f0;
-}
-
-/* Add more type styles as needed */
-
-.rating-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 0px;
-}
-
-.star {
-    font-size: 3vw; /* Responsive font size for stars */
-    color: #ddd;
-    cursor: pointer;
-    transition: color 0.2s;
-    margin: 0 1px;
-}
-
-.star.hover,
-.star.selected {
-    color: #ffcc00;
-}
-
-.comment-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 0px;
-}
-
-textarea {
-    width: 80%; /* Reduced width */
-    max-width: 600px; /* Maximum width */
-    height: 80px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 1vw; /* Responsive font size */
-    box-sizing: border-box; /* Ensures padding is included in width */
-}
-
-button {
-    margin-top: 0px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #4caf50;
-    color: white;
-    font-size: 1vw; /* Responsive font size */
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-.comments-list {
-    margin-top: 0px;
-    width: 80%; /* Same width as textarea */
-    max-width: 600px; /* Maximum width */
+.pokemon-card img {
+  animation: slide-in 1s forwards;
 }
