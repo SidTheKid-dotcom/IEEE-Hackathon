@@ -11,6 +11,7 @@ import BuddyPokemon from './components/BuddyPokemon.jsx';
 import LoginWrapper from './components/LoginWrapper.jsx';
 
 const App: React.FC = () => {
+
   return (
     <>
       <Navbar />
