@@ -10,8 +10,9 @@ import gsap from 'gsap';
 import { useEffect, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import Context from './gemi/context.jsx';
-import Pokeball from './pokeball/Pokeball.jsx';
+// import Pokeball from './pokeball/Pokeball.jsx';
 import { div } from 'three/examples/jsm/nodes/Nodes.js';
+import DO from './ash1/Do.jsx';
 
 // import { div } from 'three/examples/jsm/nodes/Nodes.js';
 const BuddyPokemon = () => {
@@ -89,7 +90,7 @@ const BuddyPokemon = () => {
         </div>
 
         <div className='right w-1/2 z-10'>
-          <Finalp/>
+          <DO/>
           <button className='fin absolute bottom-28 z-50 right-24 rounded-full   max-h-20 max-w-20' onClick={() => { setdine((prev) => !prev) }}><img src='/public/assets/images/Pokeball.png' alt="" className=' h-full w-full' /> </button>
           {/* <div className='text-wrap text-teal-500 absolute right-24 bottom-56 bg-neutral-700 rounded-3xl text-center items-center'><h1>My stats</h1><ul><li>type:fire</li><li>type:attacking,fighter</li><li>text</li></ul></div> */}
         </div>

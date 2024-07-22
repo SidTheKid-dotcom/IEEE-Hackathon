@@ -43,7 +43,7 @@ const Model = ({label}) => {
     <section className="sm:py-20 py-20 sm:px-10 px-5">
       <div className="">
         <h1 id="heading" className=" text-gray-600 lg:text-6xl md:text-5xl text-3xl lg:mb-0 mb-5 font-medium opacity-0 translate-y-20">
-        Pikachu  
+        Ash
         </h1>
 
         <div className="flex flex-col items-center mt-5">
