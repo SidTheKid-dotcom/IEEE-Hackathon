@@ -1,21 +1,18 @@
-// src/App.tsx
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import CameraPage from './components/CameraPage';
 import PokemonCardWrapper from './components/PokemonCardWrapper';
-
 import Navbar from './components/Navbar';
 
 // @ts-ignore
-import BuddyPokemon from './components/BuddyPokemon.jsx'
-
+import BuddyPokemon from './components/BuddyPokemon.jsx';
 // @ts-ignore
 import LoginWrapper from './components/LoginWrapper.jsx';
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <>
       <Navbar />
       <div className='mt-[3rem]'>
         <Routes>
@@ -26,7 +23,7 @@ const App: React.FC = () => {
           <Route path="/pokemon/:id" element={<PokemonCardWrapper />} />
         </Routes>
       </div>
-    </Router>
+    </>
   );
 };
 
