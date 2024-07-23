@@ -75,10 +75,45 @@ const PokemonCardWrapper: React.FC = () => {
     setRating(newRating);
   };
 
-  const handleCommentSubmit = () => {
+  const handleCommentSubmit = async () => {
     if (comments.trim()) {
       setCommentList([...commentList, comments]);
       setComments('');
+
+      const token = JSON.parse(String(localStorage.getItem('token')));
+
+      console.log(token);
+      const pokemonId = Number(params.id); 
+
+      if (token) {
+        const response = await axios.post('http://localhost:3010/commentPokemon',
+          {
+            pokemon_id: pokemonId,
+            comment: comments
+          },
+          {
+            headers: {
+              Authorization: token,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        console.log(response.data);
+
+        const responseRate = await axios.post('http://localhost:3010/ratePokemon',
+          {
+            pokemon_id: pokemonId,
+            raintg: Number(rating)
+          },
+          {
+            headers: {
+              Authorization: token,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        console.log(responseRate.data);
+      }
     }
   };
 
@@ -117,7 +152,7 @@ const PokemonCardWrapper: React.FC = () => {
 
   return (
     <div className='flex flex-col items-center justify-center'>
-      <div className="flex justify-center items-center h-screen w-screen bg-gray-100 cursor-none">
+      <div className="flex justify-center items-center h-screen w-screen bg-gray-100">
         <div className={`border-2 border-gray-300 rounded-lg shadow-lg w-full max-w-4xl h-auto flex flex-col p-5 bg-gradient-to-b ${typeColor} to-white overflow-hidden`}>
           <div className="text-center mb-5">
             <h2 className={`text-4xl font-bold capitalize mb-2 animate-typing font-[Decotura]`}>{pokemonData.name.charAt(0).toUpperCase() + pokemonData.name.slice(1)}</h2>
