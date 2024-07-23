@@ -17,7 +17,7 @@ interface PokemonData {
   cries: { latest: string };
 }
 
-interface soundData {
+interface SoundData {
   url: string;
 }
 
@@ -30,6 +30,7 @@ const PokemonCardWrapper: React.FC = () => {
   const [commentList, setCommentList] = useState<string[]>([]);
   const [pokemonId] = useState<number>(Number(params.id));
   const [soundUrl, setSoundUrl] = useState<string | null>(null);
+  const [hasCommented, setHasCommented] = useState<boolean>(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -42,8 +43,20 @@ const PokemonCardWrapper: React.FC = () => {
         const data: PokemonData = await response.json();
         setPokemonData(data);
 
+        const token = JSON.parse(String(localStorage.getItem('token')));
+
+        const userActions = await axios.get(`http://localhost:3010/getInfo/${pokemonId}`, {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        setRating(userActions.data.rating);
+        setComments(userActions.data.comment || '');
+        setHasCommented(!!userActions.data.comment);
+
         // Fetch the sound URL for the Pokémon
-        // Replace this URL with the actual URL where you host the Pokémon sounds
         setSoundUrl(data.cries.latest);
 
       } catch (error) {
@@ -64,11 +77,9 @@ const PokemonCardWrapper: React.FC = () => {
       }, 100);
     });
 
-    // Play sound when the component mounts
     if (audioRef.current && soundUrl) {
       audioRef.current.play();
     }
-
   }, [pokemonData, soundUrl]);
 
   const handleRating = (newRating: number) => {
@@ -76,17 +87,15 @@ const PokemonCardWrapper: React.FC = () => {
   };
 
   const handleCommentSubmit = async () => {
-    if (comments.trim()) {
-      setCommentList([...commentList, comments]);
+    if (!hasCommented && comments.trim()) {
+      setCommentList([comments]);
       setComments('');
 
       const token = JSON.parse(String(localStorage.getItem('token')));
-
-      console.log(token);
-      const pokemonId = Number(params.id); 
+      const pokemonId = Number(params.id);
 
       if (token) {
-        const response = await axios.post('http://localhost:3010/commentPokemon',
+        await axios.post('http://localhost:3010/commentPokemon',
           {
             pokemon_id: pokemonId,
             comment: comments
@@ -98,12 +107,11 @@ const PokemonCardWrapper: React.FC = () => {
             }
           }
         );
-        console.log(response.data);
 
-        const responseRate = await axios.post('http://localhost:3010/ratePokemon',
+        await axios.post('http://localhost:3010/ratePokemon',
           {
             pokemon_id: pokemonId,
-            raintg: Number(rating)
+            rating: Number(rating)
           },
           {
             headers: {
@@ -112,7 +120,8 @@ const PokemonCardWrapper: React.FC = () => {
             }
           }
         );
-        console.log(responseRate.data);
+
+        setHasCommented(true);
       }
     }
   };
@@ -128,27 +137,27 @@ const PokemonCardWrapper: React.FC = () => {
   }
 
   const typeColor = {
-    normal: 'bg-[#F0F0F0]', // Light Gray
-    fighting: 'bg-[#D56A6A]', // Soft Red
-    flying: 'bg-[#9AB8F3]', // Light Blue
-    poison: 'bg-[#B89AC9]', // Light Purple
-    ground: 'bg-[#D6B44C]', // Light Brown
-    rock: 'bg-[#D6C2A0]', // Beige
-    bug: 'bg-[#B4D200]', // Light Green
-    ghost: 'bg-[#A6A2C4]', // Soft Lavender
-    steel: 'bg-[#C0C0C0]', // Silver
-    fire: 'bg-[#F8A07B]', // Soft Orange
-    water: 'bg-[#8CC7F6]', // Light Sky Blue
-    grass: 'bg-[#9BC86E]', // Soft Olive
-    electric: 'bg-[#F4E8A1]', // Light Yellow
-    psychic: 'bg-[#F5A7B8]', // Light Pink
-    ice: 'bg-[#A4D8E2]', // Soft Ice Blue
-    dragon: 'bg-[#9A8DD3]', // Soft Purple
-    dark: 'bg-[#6D6D6D]', // Dark Gray
-    fairy: 'bg-[#F7B9B6]', // Soft Rose
-    unknown: 'bg-gray-500', // Default Gray
-    shadow: 'bg-[#8C8C8C]'  // Shadow Gray
-  }[pokemonData.types[0].type.name] || 'bg-gray-500'; // Default Gray
+    normal: 'bg-[#F0F0F0]',
+    fighting: 'bg-[#D56A6A]',
+    flying: 'bg-[#9AB8F3]',
+    poison: 'bg-[#B89AC9]',
+    ground: 'bg-[#D6B44C]',
+    rock: 'bg-[#D6C2A0]',
+    bug: 'bg-[#B4D200]',
+    ghost: 'bg-[#A6A2C4]',
+    steel: 'bg-[#C0C0C0]',
+    fire: 'bg-[#F8A07B]',
+    water: 'bg-[#8CC7F6]',
+    grass: 'bg-[#9BC86E]',
+    electric: 'bg-[#F4E8A1]',
+    psychic: 'bg-[#F5A7B8]',
+    ice: 'bg-[#A4D8E2]',
+    dragon: 'bg-[#9A8DD3]',
+    dark: 'bg-[#6D6D6D]',
+    fairy: 'bg-[#F7B9B6]',
+    unknown: 'bg-gray-500',
+    shadow: 'bg-[#8C8C8C]'
+  }[pokemonData.types[0].type.name] || 'bg-gray-500';
 
   return (
     <div className='flex flex-col items-center justify-center'>
@@ -207,8 +216,9 @@ const PokemonCardWrapper: React.FC = () => {
               onChange={(e) => setComments(e.target.value)}
               placeholder="Leave a comment..."
               className="w-4/5 max-w-lg h-20 p-2 border border-gray-300 rounded resize-none mt-4"
+              disabled={hasCommented}
             />
-            <button onClick={handleCommentSubmit} className="mt-2 py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600">Submit</button>
+            <button onClick={handleCommentSubmit} className="mt-2 py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600" disabled={hasCommented}>Submit</button>
             <div className="w-4/5 max-w-lg mt-4">
               {commentList.map((comment, index) => (
                 <p key={index} className="bg-gray-100 p-2 rounded mb-2">{comment}</p>
