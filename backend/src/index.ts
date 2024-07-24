@@ -316,24 +316,24 @@ import { GoogleAIFileManager } from "@google/generative-ai/server";
 const genAI = new GoogleGenerativeAI("AIzaSyBPDAulhDgCKGr8ugym1dz9mByBk7QWBHo");
 
 const model: GenerativeModel = genAI.getGenerativeModel({
-  // Choose a Gemini model.
-  model: "gemini-1.5-flash",
+    // Choose a Gemini model.
+    model: "gemini-1.5-flash",
 });
 
 // Initialize GoogleAIFileManager with your API_KEY.
 const fileManager = new GoogleAIFileManager(
-  "AIzaSyBPDAulhDgCKGr8ugym1dz9mByBk7QWBHo"
+    "AIzaSyBPDAulhDgCKGr8ugym1dz9mByBk7QWBHo"
 );
 
 // Configure storage for Multer
 const storage = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
-      cb(null, path.join(__dirname, 'uploads/')); // Adjust path to your uploads directory
+        cb(null, path.join(__dirname, 'uploads/')); // Adjust path to your uploads directory
     },
     filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
-      cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to file original name
+        cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to file original name
     },
-  });
+});
 
 // Initialize upload variable with storage configuration
 const upload = multer({ storage: storage });
@@ -341,41 +341,101 @@ const upload = multer({ storage: storage });
 // Create an endpoint for file upload
 app.post("/upload", upload.single("file"), async (req: AuthRequest, res: Response) => {
 
-  if (!req.file) {
-    return res.status(400).send("No file uploaded");
-  }
+    if (!req.file) {
+        return res.status(400).send("No file uploaded");
+    }
 
-  const filePath = req.file.path;
-  const fileOptions = {
-    mimeType: req.file.mimetype,
-    displayName: req.file.originalname,
-  };
+    const filePath = req.file.path;
+    const fileOptions = {
+        mimeType: req.file.mimetype,
+        displayName: req.file.originalname,
+    };
 
-  try {
-    const uploadResponse = await fileManager.uploadFile(filePath, fileOptions);
+    try {
+        const uploadResponse = await fileManager.uploadFile(filePath, fileOptions);
 
-    const result = await model.generateContent([
-      {
-        fileData: {
-          mimeType: uploadResponse.file.mimeType,
-          fileUri: uploadResponse.file.uri,
-        },
-      },
-      { text: "Guess the pokemon id only, just give me the id and nothing else should be in the response" },
-    ]);
+        const result = await model.generateContent([
+            {
+                fileData: {
+                    mimeType: uploadResponse.file.mimeType,
+                    fileUri: uploadResponse.file.uri,
+                },
+            },
+            { text: "Guess the pokemon id only, just give me the id and nothing else should be in the response" },
+        ]);
 
-    const pokemonId = result.response.text();
-    console.log(result.response.text());
+        const pokemonId = result.response.text();
+        console.log(result.response.text());
 
-    res.json({
-        message: `File uploaded successfully: ${req.file.filename}`,
-        pokemonId: pokemonId
-    })
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("An error occurred during file upload");
-  }
+        res.json({
+            message: `File uploaded successfully: ${req.file.filename}`,
+            pokemonId: pokemonId
+        })
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("An error occurred during file upload");
+    }
 });
+
+// find your pokemon route
+app.post("/findYourPokemon", authMiddleware, async (req: AuthRequest, res: Response) => {
+    const { counts } = req.body;
+    const random = Math.floor(Math.random() * 2);
+
+    const indexOfMaxValue = counts.reduce((iMax: number, x: number, i: number, counts: number[]) => x > counts[iMax] ? i : iMax, 0);
+
+    let chosenPokemonId;
+
+    try {
+        if (indexOfMaxValue === 0) {
+            if (random === 0) {
+                chosenPokemonId = 1; // Bulbasaur
+            } else {
+                chosenPokemonId = 152; // Chikorita
+            }
+        } else if (indexOfMaxValue === 1) {
+            if (random === 0) {
+                chosenPokemonId = 4; // Charmander
+            } else {
+                chosenPokemonId = 155; // Cyndaquil
+            }
+        } else {
+            if (random === 0) {
+                chosenPokemonId = 7; // Squirtle
+            } else {
+                chosenPokemonId = 158; // Totodile
+            }
+        }
+
+        await prisma.user.update({
+            where: { id: req.userID as number },
+            data: { buddyPokemon: chosenPokemonId as number },
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: 'Error choosing your Pokémon' });
+    }
+
+    return res.status(200).json({
+        message: "Pokémon Chosen Successfully",
+        pokemonId: chosenPokemonId,
+    });
+});
+
+// get route to get the chosen pokemon
+app.get('/getChosenPokemon', authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const user = await prisma.user.findUnique({ where: { id: req.userID as number } });
+        if (!user) {
+            return res.status(404).send({ message: 'User not found' });
+        }
+        return res.status(200).json({ pokemon: user.buddyPokemon });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: 'Error getting chosen pokemon' });
+    }
+})
+
 
 // Start the server
 app.listen(port, () => {
