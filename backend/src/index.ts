@@ -63,7 +63,7 @@ app.post('/signup', async (req: Request, res: Response) => {
             data: { buddy_pokemon: buddyPokemon },
         }); */
 
-        const token = jwt.sign({ userID: user.id }, JWT_SECRET_KEY);
+        const token = jwt.sign({ userID: user.id, username: user.username }, JWT_SECRET_KEY);
 
         return res.status(201).json({ message: 'User created', token });
     } catch (error) {
@@ -91,7 +91,7 @@ app.post('/signin', async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'Incorrect password' });
         }
 
-        const token = jwt.sign({ userID: user.id }, JWT_SECRET_KEY);
+        const token = jwt.sign({ userID: user.id, username: user.username }, JWT_SECRET_KEY);
 
         res.status(200).json({ message: 'Login successful', token });
     } catch (error) {
