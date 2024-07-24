@@ -11,14 +11,16 @@ datasource db {
 }
 
 model User {
-  id            Int        @id @default(autoincrement())
-  username      String     @unique
-  email         String     @unique
-  password      String
-  buddyPokemon  Int?
-  favorites     Favorite[]
-  ratings       Rating[]
-  comments      Comment[]
+  id                Int        @id @default(autoincrement())
+  username          String     @unique
+  email             String     @unique
+  password          String
+  buddyPokemon      Int?
+  buddyPokemonLevel Int?
+  buddyPokemonXP    Int?
+  favorites         Favorite[]
+  ratings           Rating[]
+  comments          Comment[]
 }
 
 model Favorite {

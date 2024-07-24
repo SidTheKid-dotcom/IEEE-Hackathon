@@ -409,7 +409,11 @@ app.post("/findYourPokemon", authMiddleware, async (req: AuthRequest, res: Respo
 
         await prisma.user.update({
             where: { id: req.userID as number },
-            data: { buddyPokemon: chosenPokemonId as number },
+            data: {
+                buddyPokemon: chosenPokemonId as number,
+                buddyPokemonLevel: 5 as number,
+                buddyPokemonXP: 0 as number
+            },
         });
     } catch (error) {
         console.error(error);
@@ -429,13 +433,62 @@ app.get('/getChosenPokemon', authMiddleware, async (req: AuthRequest, res: Respo
         if (!user) {
             return res.status(404).send({ message: 'User not found' });
         }
-        return res.status(200).json({ pokemon: user.buddyPokemon });
+        return res.status(200).json({
+            pokemon: user.buddyPokemon,
+            level: user.buddyPokemonLevel,
+            xp: user.buddyPokemonXP
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: 'Error getting chosen pokemon' });
     }
 })
 
+// route to increase xp
+app.post('/increaseXP', authMiddleware, async (req: AuthRequest, res: Response) => {
+    const { xp } = req.body;
+
+    try {
+        // Fetch the current XP and Level
+        const user = await prisma.user.findUnique({
+            where: { id: req.userID as number },
+            select: { buddyPokemonXP: true, buddyPokemonLevel: true, buddyPokemon: true },
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Calculate new XP and Level
+        const newXP = (user.buddyPokemonXP ?? 0) + (xp as number);
+        let incrementLevel = 0;
+        let newBuddyPokemonId = user.buddyPokemon;
+
+        if (newXP >= 100) {
+            incrementLevel = 1;
+            // Check if the level is 5 or 10 to increment the buddyPokemon ID
+            const newLevel = (user.buddyPokemonLevel ?? 0) + incrementLevel;
+            if (newLevel === 5 || newLevel === 10) {
+                newBuddyPokemonId = (user.buddyPokemon ?? 0) + 1;
+            }
+        }
+
+        // Update XP, Level, and Buddy Pokemon ID
+        const updatedUser = await prisma.user.update({
+            where: { id: req.userID as number },
+            data: {
+                buddyPokemonXP: newXP >= 100 ? 0 : newXP,
+                buddyPokemonLevel: { increment: incrementLevel },
+                buddyPokemon: newBuddyPokemonId !== user.buddyPokemon ? newBuddyPokemonId : undefined,
+            },
+        });
+
+        return res.status(200).json({ message: 'XP increased successfully', user, updatedUser });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: 'Error increasing XP' });
+    }
+});
 
 // Start the server
 app.listen(port, () => {
