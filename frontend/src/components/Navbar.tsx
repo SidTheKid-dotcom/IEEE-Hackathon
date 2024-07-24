@@ -12,6 +12,7 @@ const Navbar = () => {
     {name:'Buddy Pokemon',route: '/buddyPokemon'},
    
     {name:'PokeCam',route:'/camera'},
+    {name:'Favourites',route:'/favouritePokemon'},
     { name: 'Documentation', route: 'https://ieee-hackathon-docs.vercel.app/' },
   ];
 

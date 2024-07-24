@@ -4,6 +4,7 @@ import Home from './components/Home';
 import CameraPage from './components/CameraPage';
 import PokemonCardWrapper from './components/PokemonCardWrapper';
 import Navbar from './components/Navbar';
+import FavouritePage from './components/FavouritePage'
 
 // @ts-ignore
 import BuddyPokemon from './components/BuddyPokemon.jsx';
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/buddyPokemon" element={<BuddyPokemon />} />
           <Route path="/camera" element={<CameraPage />} />
           <Route path="/pokemon/:id" element={<PokemonCardWrapper />} />
+          <Route path="/favouritePokemon" element={<FavouritePage />} />
         </Routes>
       </div>
     </>
