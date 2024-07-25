@@ -134,7 +134,7 @@ const PokemonCardWrapper = () => {
       } else {
         await axios.post('http://localhost:3010/addFavouritePokemon', {
           pokemon_id: pokemonId,
-          pokemon_name: pokemonName
+          pokemon_name: pokemonName,
         }, {
           headers: {
             Authorization: token,

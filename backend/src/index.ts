@@ -6,6 +6,8 @@ import bcrypt from 'bcrypt';
 import authMiddleware from './authMiddleware';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import { increaseXP } from './commonFunctions';
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -155,7 +157,10 @@ app.post('/addFavouritePokemon', authMiddleware, async (req: AuthRequest, res: R
             },
         });
 
-        res.status(201).json({ message: "New Favorite Added", newFavorite });
+        // Increase XP after adding a favorite Pokémon
+        const xpResponse = await increaseXP(req.userID as number, 10);
+
+        res.status(201).json({ message: "New Favorite Added", newFavorite, xpResponse });
     } catch (error) {
         res.status(500).json({ message: 'Error creating favorite', error: (error as Error).message });
     }
@@ -202,6 +207,9 @@ app.post('/ratePokemon', authMiddleware, async (req: AuthRequest, res: Response)
             },
         });
 
+        // increase xp
+        const xpResponse = await increaseXP(req.userID as number, 30);
+
         res.status(201).json({ message: "Pokemon rated successfully", newRating });
     } catch (error) {
         res.status(500).json({ message: 'Error creating rating', error: (error as Error).message });
@@ -223,6 +231,9 @@ app.put('/updateRating/:ratingId', authMiddleware, async (req: AuthRequest, res:
                 rating: parseInt(rating, 10),
             },
         });
+
+        // increase xp
+        const xpResponse = await increaseXP(req.userID as number, 10);
 
         res.status(200).json({ message: "Rating updated successfully", updatedRating });
     } catch (error) {
@@ -261,6 +272,9 @@ app.post('/commentPokemon', authMiddleware, async (req: AuthRequest, res: Respon
             },
         });
 
+        // increase xp
+        const xpResponse = await increaseXP(req.userID as number, 20);
+
         res.status(201).json({ message: "Commented on Pokemon successfully", newComment });
     } catch (error) {
         res.status(500).json({ message: 'Error creating comment', error: (error as Error).message });
@@ -282,6 +296,9 @@ app.put('/updateComment/:commentId', authMiddleware, async (req: AuthRequest, re
                 comment: comment as string,
             },
         });
+
+        // increase xp
+        const xpResponse = await increaseXP(req.userID as number, 10);
 
         res.status(200).json({ message: "Comment updated successfully", updatedComment });
     } catch (error) {
@@ -449,44 +466,11 @@ app.post('/increaseXP', authMiddleware, async (req: AuthRequest, res: Response) 
     const { xp } = req.body;
 
     try {
-        // Fetch the current XP and Level
-        const user = await prisma.user.findUnique({
-            where: { id: req.userID as number },
-            select: { buddyPokemonXP: true, buddyPokemonLevel: true, buddyPokemon: true },
-        });
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        // Calculate new XP and Level
-        const newXP = (user.buddyPokemonXP ?? 0) + (xp as number);
-        let incrementLevel = 0;
-        let newBuddyPokemonId = user.buddyPokemon;
-
-        if (newXP >= 100) {
-            incrementLevel = 1;
-            // Check if the level is 5 or 10 to increment the buddyPokemon ID
-            const newLevel = (user.buddyPokemonLevel ?? 0) + incrementLevel;
-            if (newLevel === 5 || newLevel === 10) {
-                newBuddyPokemonId = (user.buddyPokemon ?? 0) + 1;
-            }
-        }
-
-        // Update XP, Level, and Buddy Pokemon ID
-        const updatedUser = await prisma.user.update({
-            where: { id: req.userID as number },
-            data: {
-                buddyPokemonXP: newXP >= 100 ? 0 : newXP,
-                buddyPokemonLevel: { increment: incrementLevel },
-                buddyPokemon: newBuddyPokemonId !== user.buddyPokemon ? newBuddyPokemonId : undefined,
-            },
-        });
-
-        return res.status(200).json({ message: 'XP increased successfully', user, updatedUser });
+        const xpResponse = await increaseXP(req.userID as number, xp);
+        res.status(200).json(xpResponse);
     } catch (error) {
         console.error(error);
-        return res.status(500).send({ message: 'Error increasing XP' });
+        res.status(500).send({ message: 'Error increasing XP', error: (error as Error).message });
     }
 });
 
