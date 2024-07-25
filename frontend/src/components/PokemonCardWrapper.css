@@ -1,0 +1,321 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Decotura&display=swap'); */
+
+body {
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+} 
+
+.pokemon-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.pokemon-card {
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  position: relative;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.pokemon-card.normal {
+  background: linear-gradient(to bottom, #F0F0F0 0%, #fff 100%);
+}
+
+.pokemon-card.fighting {
+  background: linear-gradient(to bottom, #D56A6A 0%, #fff 100%);
+}
+
+.pokemon-card.flying {
+  background: linear-gradient(to bottom, #9AB8F3 0%, #fff 100%);
+}
+
+.pokemon-card.poison {
+  background: linear-gradient(to bottom, #B89AC9 0%, #fff 100%);
+}
+
+.pokemon-card.ground {
+  background: linear-gradient(to bottom, #D6B44C 0%, #fff 100%);
+}
+
+.pokemon-card.rock {
+  background: linear-gradient(to bottom, #D6C2A0 0%, #fff 100%);
+}
+
+.pokemon-card.bug {
+  background: linear-gradient(to bottom, #B4D200 0%, #fff 100%);
+}
+
+.pokemon-card.ghost {
+  background: linear-gradient(to bottom, #A6A2C4 0%, #fff 100%);
+}
+
+.pokemon-card.steel {
+  background: linear-gradient(to bottom, #C0C0C0 0%, #fff 100%);
+}
+
+.pokemon-card.fire {
+  background: linear-gradient(to bottom, #F8A07B 0%, #fff 100%);
+}
+
+.pokemon-card.water {
+  background: linear-gradient(to bottom, #8CC7F6 0%, #fff 100%);
+}
+
+.pokemon-card.grass {
+  background: linear-gradient(to bottom, #9BC86E 0%, #fff 100%);
+}
+
+.pokemon-card.electric {
+  background: linear-gradient(to bottom, #F4E8A1 0%, #fff 100%);
+}
+
+.pokemon-card.psychic {
+  background: linear-gradient(to bottom, #F5A7B8 0%, #fff 100%);
+}
+
+.pokemon-card.ice {
+  background: linear-gradient(to bottom, #A4D8E2 0%, #fff 100%);
+}
+
+.pokemon-card.dragon {
+  background: linear-gradient(to bottom, #9A8DD3 0%, #fff 100%);
+}
+
+.pokemon-card.dark {
+  background: linear-gradient(to bottom, #6D6D6D 0%, #fff 100%);
+}
+
+.pokemon-card.fairy {
+  background: linear-gradient(to bottom, #F7B9B6 0%, #fff 100%);
+}
+
+.pokemon-card.unknown {
+  background: linear-gradient(to bottom, #6B6B6B 0%, #fff 100%);
+}
+
+.pokemon-card.shadow {
+  background: linear-gradient(to bottom, #8C8C8C 0%, #fff 100%);
+}
+
+
+.top-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.top-section h2 {
+  margin: 0;
+  font-size: 4vw;
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 0 auto;
+  letter-spacing: 0.15em;
+  animation: typing 3.5s steps(40, end);
+  font-family: 'Decotura', cursive;
+  text-transform: capitalize;
+}
+
+.type {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 1.5vw;
+  color: #fff;
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+.slide-in {
+  opacity: 0;
+  transform: translateX(-100%);
+  animation: slide-in 1s forwards;
+}
+
+@keyframes slide-in {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.main-section {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  perspective: 1000px;
+}
+
+.details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transform: rotateY(35deg);
+  transform-origin: left center;
+  position: relative;
+}
+
+.details p {
+  margin: 5px 0;
+  font-size: 2vw;
+  transform: rotateY(-35deg);
+}
+
+.image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pokemon-card img {
+  width: 20vw;
+  height: auto;
+  object-fit: contain;
+}
+
+.stats {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 2vw;
+  transform: rotateY(-35deg);
+  transform-origin: right center;
+  perspective: 500px;
+  padding-right : 20px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1vw;
+  width: 100%;
+}
+
+.stat-name {
+  width: 10vw;
+  text-transform: capitalize;
+  font-size: 1.5vw;
+}
+
+.stat-bar {
+  flex: 1;
+  height: 1.5vw;
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+  margin-left: 1vw;
+}
+
+.stat-bar-inner {
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2vw;
+  width: 0%;
+  transition: width 1s ease-out;
+  background-image: linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.3) 75%, transparent 75%, transparent);
+  background-size: 20px 20px;
+}
+
+.rating-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top:-80px;
+  margin-top:-40px;
+}
+
+.star {
+  font-size: 2vw;
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.2s;
+}
+
+.star.hover,
+.star.selected {
+  color: #ffeb3b;
+}
+
+.comment-section {
+  margin-top: 20px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-section textarea {
+  width: 60%;
+  height: 60px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none;
+  font-size: 1.5vw;
+}
+
+
+.comments-list {
+  margin-top: 20px;
+}
+
+.comments-list p {
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 5px 0;
+  font-size: 1.5vw;
+}
+.yash{
+  border: none;
+  outline: none;
+  background-color: #6c5ce7;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  color: #fff;
+  border-radius: 5px;
+  transition: all ease 0.1s;
+  box-shadow: 0px 5px 0px 0px #a29bfe;
+}
+.yash:active{
+  transform: translateY(5px);
+  box-shadow: 0px 0px 0px 0px #a29bfe;
+}

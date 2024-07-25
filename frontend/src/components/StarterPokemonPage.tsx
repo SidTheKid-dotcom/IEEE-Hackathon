@@ -56,10 +56,12 @@ const questions: Question[] = [
     },
 ];
 
-const TriviaPage: React.FC = () => {
+const StarterPokemonPage: React.FC = () => {
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [answerCounts, setAnswerCounts] = useState<number[]>([0, 0, 0]);
     const [chosenPokemon, setChosenPokemon] = useState<Pokemon | null>(null);
+    const [level, setLevel] = useState<number>(0);
+    const [xp, setXp] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -87,6 +89,9 @@ const TriviaPage: React.FC = () => {
                         imageUrl: pokemon.sprites.other['official-artwork'].front_default,
                         soundUrl: `https://play.pokemonshowdown.com/audio/cries/${pokemon.name.toLowerCase()}.mp3`,
                     });
+
+                    setLevel(response.data.level || 0);
+                    setXp(response.data.xp || 0);
                 }
             } catch (error) {
                 console.error('Failed to fetch chosen Pokémon', error);
@@ -163,7 +168,25 @@ const TriviaPage: React.FC = () => {
                 <div className="text-center">
                     <h2 className="text-3xl font-semibold mb-4">Your Pokémon</h2>
                     <img src={chosenPokemon.imageUrl} alt={chosenPokemon.name} className="w-48 h-48 mx-auto rounded-lg shadow-lg" />
-                    <p className="text-2xl mt-4 text-gray-700">{chosenPokemon.name}</p>
+                    <p className="text-2xl mt-4 text-gray-700 font-bold">{chosenPokemon.name.toUpperCase()}</p>
+
+                    <div className="mt-6">
+                        <div className='flex flex-row justify-center'>
+                            <h3 className="text-xl font-medium mb-2">Level&nbsp;</h3>
+                            <div className='text-xl font-medium mb-2'>
+                                {level}
+                            </div>
+                        </div>
+                        <h3 className="text-xl font-medium mt-4 mb-2">XP</h3>
+                        <div className="w-full bg-gray-200 rounded-full">
+                            <div
+                                className="bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full"
+                                style={{ width: `${xp}%` }}
+                            >
+                                {xp}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <div className="bg-white p-6 rounded-lg shadow-md max-w-lg w-full">
@@ -188,4 +211,4 @@ const TriviaPage: React.FC = () => {
     );
 };
 
-export default TriviaPage;
+export default StarterPokemonPage;
