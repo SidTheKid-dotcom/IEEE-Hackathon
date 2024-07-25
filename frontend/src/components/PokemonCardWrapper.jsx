@@ -4,6 +4,7 @@ import axios from 'axios';
 import './PokemonCardWrapper.css';
 import PokemonLocation from './PokemonLocation';
 import PokemonMap from './PokemonMap';
+
 const PokemonCardWrapper = () => {
   const { id } = useParams();
   const [pokemonData, setPokemonData] = useState(null);
@@ -13,6 +14,7 @@ const PokemonCardWrapper = () => {
   const [commentList, setCommentList] = useState([]);
   const [soundUrl, setSoundUrl] = useState(null);
   const [hasCommented, setHasCommented] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const audioRef = useRef(null);
 
   const apiUrl = 'https://pokeapi.co/api/v2/pokemon/';
@@ -36,6 +38,7 @@ const PokemonCardWrapper = () => {
         setRating(userActions.data.rating || 0);
         setComments(userActions.data.comment || '');
         setHasCommented(!!userActions.data.comment);
+        setIsFavorite(userActions.data.isFavorite || false); // Check if the Pokémon is already a favorite
 
         // Fetch the sound URL for the Pokémon
         setSoundUrl(data.cries.latest);
@@ -111,6 +114,38 @@ const PokemonCardWrapper = () => {
     }
   };
 
+  const handleToggleFavorite = async () => {
+    const token = JSON.parse(String(localStorage.getItem('token')));
+    const pokemonId = Number(id);
+    const pokemonName = pokemonData.name;
+
+    if (token) {
+      if (isFavorite) {
+        await axios.delete('http://localhost:3010/removeFavouritePokemon', {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json'
+          },
+          data: {
+            pokemon_id: pokemonId,
+          },
+        });
+        setIsFavorite(false);
+      } else {
+        await axios.post('http://localhost:3010/addFavouritePokemon', {
+          pokemon_id: pokemonId,
+          pokemon_name: pokemonName
+        }, {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json'
+          }
+        });
+        setIsFavorite(true);
+      }
+    }
+  };
+
   if (!pokemonData) {
     return <div>Loading...</div>;
   }
@@ -123,7 +158,6 @@ const PokemonCardWrapper = () => {
             <h2>{pokemonData.name.charAt(0).toUpperCase() + pokemonData.name.slice(1)}</h2>
             <div className={`type ${pokemonData.types[0].type.name}`}>{pokemonData.types[0].type.name}</div>
           </div>
-
 
           <div className="main-section">
             <div className="details">
@@ -163,6 +197,7 @@ const PokemonCardWrapper = () => {
               </span>
             ))}
           </div>
+
           <div className="sound-container w-full flex flex-row justify-center">
             <button
               onClick={handlePlaySound}
@@ -185,6 +220,15 @@ const PokemonCardWrapper = () => {
               <span>Play Sound</span>
             </button>
             <audio ref={audioRef} src={soundUrl || ''} preload="auto" />
+          </div>
+
+          <div className="favorite-container flex flex-row justify-center mt-[2rem]">
+            <button
+              onClick={handleToggleFavorite}
+              className={`favorite-button ${isFavorite ? 'favorited' : ''}`}
+            >
+              {isFavorite ? '★ Remove from Favorites' : '☆ Add to Favorites'}
+            </button>
           </div>
 
           <div className="comment-section">
