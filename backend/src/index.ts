@@ -384,6 +384,9 @@ app.post("/upload", upload.single("file"), async (req: AuthRequest, res: Respons
         const pokemonId = result.response.text();
         console.log(result.response.text());
 
+        // increase xp
+        await increaseXP(req.userID as number, 20);
+
         res.json({
             message: `File uploaded successfully: ${req.file.filename}`,
             pokemonId: pokemonId
