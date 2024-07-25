@@ -39,8 +39,6 @@ const PokemonCardWrapper = () => {
           }
         });
 
-        console.log(userActions.data);
-
         setRating(userActions.data.rating || 0);
         setComments(userActions.data.comment || '');
         setHasCommented(!!userActions.data.comment);
@@ -94,8 +92,6 @@ const PokemonCardWrapper = () => {
           }
         });
 
-        console.log(commentResponse.data);
-
         const prevPokemon = commentResponse.data.xpResponse.user.buddyPokemon;
         const newPokemon = commentResponse.data.xpResponse.updatedUser.buddyPokemon;
 
@@ -125,8 +121,6 @@ const PokemonCardWrapper = () => {
           'Content-Type': 'application/json'
         }
       });
-
-      console.log(rateResponse.data);
 
       const prevPokemon = rateResponse.data.xpResponse.user.buddyPokemon;
       const newPokemon = rateResponse.data.xpResponse.updatedUser.buddyPokemon;
@@ -241,8 +235,6 @@ const PokemonCardWrapper = () => {
               </span>
             ))}
           </div>
-
-          {hasRating && <p>Your Rating: {rating} stars</p>}
 
           <div className="sound-container w-full flex flex-row justify-center">
             <button
