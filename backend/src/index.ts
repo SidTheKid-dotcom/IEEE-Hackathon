@@ -210,7 +210,7 @@ app.post('/ratePokemon', authMiddleware, async (req: AuthRequest, res: Response)
         // increase xp
         const xpResponse = await increaseXP(req.userID as number, 30);
 
-        res.status(201).json({ message: "Pokemon rated successfully", newRating });
+        res.status(201).json({ message: "Pokemon rated successfully", newRating, xpResponse });
     } catch (error) {
         res.status(500).json({ message: 'Error creating rating', error: (error as Error).message });
     }
@@ -235,7 +235,7 @@ app.put('/updateRating/:ratingId', authMiddleware, async (req: AuthRequest, res:
         // increase xp
         const xpResponse = await increaseXP(req.userID as number, 10);
 
-        res.status(200).json({ message: "Rating updated successfully", updatedRating });
+        res.status(200).json({ message: "Rating updated successfully", updatedRating, xpResponse });
     } catch (error) {
         res.status(500).json({ message: 'Error updating rating', error: (error as Error).message });
     }
@@ -275,7 +275,7 @@ app.post('/commentPokemon', authMiddleware, async (req: AuthRequest, res: Respon
         // increase xp
         const xpResponse = await increaseXP(req.userID as number, 20);
 
-        res.status(201).json({ message: "Commented on Pokemon successfully", newComment });
+        res.status(201).json({ message: "Commented on Pokemon successfully", newComment, xpResponse });
     } catch (error) {
         res.status(500).json({ message: 'Error creating comment', error: (error as Error).message });
     }
@@ -300,7 +300,7 @@ app.put('/updateComment/:commentId', authMiddleware, async (req: AuthRequest, re
         // increase xp
         const xpResponse = await increaseXP(req.userID as number, 10);
 
-        res.status(200).json({ message: "Comment updated successfully", updatedComment });
+        res.status(200).json({ message: "Comment updated successfully", updatedComment, xpResponse });
     } catch (error) {
         res.status(500).json({ message: 'Error updating comment', error: (error as Error).message });
     }

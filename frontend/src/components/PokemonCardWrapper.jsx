@@ -4,6 +4,7 @@ import axios from 'axios';
 import './PokemonCardWrapper.css';
 import PokemonLocation from './PokemonLocation';
 import PokemonMap from './PokemonMap';
+import EvolvingPage from './EvolvingPage';
 
 const PokemonCardWrapper = () => {
   const { id } = useParams();
@@ -15,6 +16,9 @@ const PokemonCardWrapper = () => {
   const [soundUrl, setSoundUrl] = useState(null);
   const [hasCommented, setHasCommented] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isEvolving, setIsEvolving] = useState({ evolving: false, prevPokemon: '', newPokemon: '' });
+  const [hasRating, setHasRating] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const audioRef = useRef(null);
 
   const apiUrl = 'https://pokeapi.co/api/v2/pokemon/';
@@ -35,14 +39,18 @@ const PokemonCardWrapper = () => {
           }
         });
 
+        console.log(userActions.data);
+
         setRating(userActions.data.rating || 0);
         setComments(userActions.data.comment || '');
         setHasCommented(!!userActions.data.comment);
-        setIsFavorite(userActions.data.isFavorite || false); // Check if the Pokémon is already a favorite
+        setIsFavorite(userActions.data.isFavorite || false);
+        setHasRating(!!userActions.data.rating);
+        setCommentList(userActions.data.comments || []);
 
-        // Fetch the sound URL for the Pokémon
         setSoundUrl(data.cries.latest);
 
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching Pokémon data:', error);
       }
@@ -67,11 +75,6 @@ const PokemonCardWrapper = () => {
     }
   }, [pokemonData, soundUrl]);
 
-
-  const handleRating = (newRating) => {
-    setRating(newRating);
-  };
-
   const handleCommentSubmit = async () => {
     if (!hasCommented && comments.trim()) {
       setCommentList([...commentList, comments]);
@@ -81,7 +84,7 @@ const PokemonCardWrapper = () => {
       const pokemonId = Number(id);
 
       if (token) {
-        await axios.post('http://localhost:3010/commentPokemon', {
+        const commentResponse = await axios.post('http://localhost:3010/commentPokemon', {
           pokemon_id: pokemonId,
           comment: comments
         }, {
@@ -91,18 +94,47 @@ const PokemonCardWrapper = () => {
           }
         });
 
-        await axios.post('http://localhost:3010/ratePokemon', {
-          pokemon_id: pokemonId,
-          rating: Number(rating)
-        }, {
-          headers: {
-            Authorization: token,
-            'Content-Type': 'application/json'
-          }
-        });
+        console.log(commentResponse.data);
+
+        const prevPokemon = commentResponse.data.xpResponse.user.buddyPokemon;
+        const newPokemon = commentResponse.data.xpResponse.updatedUser.buddyPokemon;
+
+        if (prevPokemon !== newPokemon) {
+          setIsEvolving({ evolving: true, prevPokemon: prevPokemon, newPokemon: newPokemon });
+        }
 
         setHasCommented(true);
       }
+    }
+  };
+
+  const handleRateSubmit = async (star) => {
+
+    setRating(star);
+
+    const token = JSON.parse(String(localStorage.getItem('token')));
+    const pokemonId = Number(id);
+
+    if (token) {
+      const rateResponse = await axios.post('http://localhost:3010/ratePokemon', {
+        pokemon_id: pokemonId,
+        rating: star
+      }, {
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log(rateResponse.data);
+
+      const prevPokemon = rateResponse.data.xpResponse.user.buddyPokemon;
+      const newPokemon = rateResponse.data.xpResponse.updatedUser.buddyPokemon;
+
+      if (prevPokemon !== newPokemon) {
+        setIsEvolving({ evolving: true, prevPokemon: prevPokemon, newPokemon: newPokemon });
+      }
+      setHasRating(true);
     }
   };
 
@@ -130,9 +162,10 @@ const PokemonCardWrapper = () => {
             pokemon_id: pokemonId,
           },
         });
+
         setIsFavorite(false);
       } else {
-        await axios.post('http://localhost:3010/addFavouritePokemon', {
+        const favResponse = await axios.post('http://localhost:3010/addFavouritePokemon', {
           pokemon_id: pokemonId,
           pokemon_name: pokemonName,
         }, {
@@ -141,18 +174,29 @@ const PokemonCardWrapper = () => {
             'Content-Type': 'application/json'
           }
         });
+
+        const prevPokemon = favResponse.data.xpResponse.user.buddyPokemon;
+        const newPokemon = favResponse.data.xpResponse.updatedUser.buddyPokemon;
+
+        if (prevPokemon !== newPokemon) {
+          setIsEvolving({ evolving: true, prevPokemon: prevPokemon, newPokemon: newPokemon });
+        }
         setIsFavorite(true);
       }
     }
   };
 
-  if (!pokemonData) {
+  if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (isEvolving.evolving) {
+    return <EvolvingPage prevPokemon={isEvolving.prevPokemon} newPokemon={isEvolving.newPokemon} setIsEvolving={setIsEvolving} />;
   }
 
   return (
     <div className=''>
-      <div className="pokemon-container flex flex-col"> 
+      <div className="pokemon-container flex flex-col">
         <div className={`pokemon-card ${pokemonData.types[0].type.name}`}>
           <div className="top-section">
             <h2>{pokemonData.name.charAt(0).toUpperCase() + pokemonData.name.slice(1)}</h2>
@@ -188,15 +232,17 @@ const PokemonCardWrapper = () => {
             {[1, 2, 3, 4, 5].map((star) => (
               <span
                 key={star}
-                className={`star ${hover >= star || rating >= star ? 'hover' : ''} ${rating >= star ? 'selected' : ''}`}
-                onMouseEnter={() => setHover(star)}
-                onMouseLeave={() => setHover(null)}
-                onClick={() => handleRating(star)}
+                className={`star ${hover >= star || rating >= star ? 'hover' : ''} ${hasRating && rating >= star ? 'selected' : ''}`}
+                onMouseEnter={() => !hasRating && setHover(star)}
+                onMouseLeave={() => !hasRating && setHover(null)}
+                onClick={() => !hasRating && handleRateSubmit(star)}
               >
                 ★
               </span>
             ))}
           </div>
+
+          {hasRating && <p>Your Rating: {rating} stars</p>}
 
           <div className="sound-container w-full flex flex-row justify-center">
             <button
