@@ -385,7 +385,7 @@ app.post("/upload", upload.single("file"), async (req: AuthRequest, res: Respons
         console.log(result.response.text());
 
         // increase xp
-        await increaseXP(req.userID as number, 20);
+        //await increaseXP(req.userID as number, 20);
 
         res.json({
             message: `File uploaded successfully: ${req.file.filename}`,
