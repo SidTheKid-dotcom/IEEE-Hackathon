@@ -1,0 +1,9 @@
+.camera-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: white;
+    overflow: hidden; /* Ensures no scrollbars appear */
+  }
+  

@@ -1,11 +1,14 @@
+// src/components/CapturePhoto.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import pokedexImage from '../assets/images/bruhhhy.png';
+import './CapturePhoto.css';
 
 const CameraCaptureUpload: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [uploadStatus, setUploadStatus] = useState<string>('');
-
+  const [uploadStatus, setUploadStatus] = useState<string>('Capture your pokemon');
+  
   const navigate = useNavigate();
 
   const capturePhoto = () => {
@@ -25,6 +28,9 @@ const CameraCaptureUpload: React.FC = () => {
         const formData = new FormData();
         formData.append('file', blob, 'photo.jpg');
 
+        // Update the status text
+        setUploadStatus('Finding your pokemon...');
+        
         // Call function to upload file
         uploadFile(formData);
       }
@@ -39,7 +45,6 @@ const CameraCaptureUpload: React.FC = () => {
       });
 
       if (response.ok) {
-        console.log('hereeree ')
         const responseData = await response.json();
         setUploadStatus('File uploaded successfully');
         navigate(`/pokemon/${responseData.pokemonId}`);
@@ -76,12 +81,16 @@ const CameraCaptureUpload: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Capture and Upload a Photo</h1>
-      <video ref={videoRef} width="320" height="240" autoPlay></video>
-      <button onClick={capturePhoto}>Capture Photo</button>
-      <canvas ref={canvasRef} width="320" height="240"></canvas>
-      <p>{uploadStatus}</p>
+    <div className="camera-container">
+      <img src={pokedexImage} alt="Pokedex" className="pokedex-image" />
+      <video ref={videoRef} className="video-feed" autoPlay></video>
+      <canvas ref={canvasRef} width="320" height="240" style={{ display: 'none' }}></canvas>
+      <button className="pushable capture-button" onClick={capturePhoto}>
+        <span className="shadow"></span>
+        <span className="edge"></span>
+        <span className="front">Capture Photo</span>
+      </button>
+      <p className="status-text">{uploadStatus}</p>
     </div>
   );
 };

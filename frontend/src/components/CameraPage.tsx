@@ -1,10 +1,11 @@
 // src/components/CameraPage.tsx
 import React from 'react';
 import CameraCaptureUpload from './CapturePhoto';
+import './CameraPage.css'; // Add this line
 
 const CameraPage: React.FC = () => {
   return (
-    <div className="bg-white text-black font-sans flex justify-center items-center h-screen">
+    <div className="camera-page">
       <CameraCaptureUpload />
     </div>
   );
