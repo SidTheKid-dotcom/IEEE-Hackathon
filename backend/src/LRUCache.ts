@@ -1,81 +1,51 @@
-// LRUCache.ts
-
-class Node {
-    key: any;
-    value: any;
-    prev: Node | null;
-    next: Node | null;
-
-    constructor(key: any, value: any) {
-        this.key = key;
-        this.value = value;
-        this.prev = null;
-        this.next = null;
-    }
-}
-
 class LRUCache {
     private capacity: number;
-    private cache: Map<any, Node>;
-    private head: Node;
-    private tail: Node;
+    private list: number[]; // List to maintain order
+    private map: Map<number, any>; // Map to store the actual data
 
     constructor(capacity: number) {
         this.capacity = capacity;
-        this.cache = new Map();
-        this.head = new Node(null, null); // dummy head
-        this.tail = new Node(null, null); // dummy tail
-        this.head.next = this.tail;
-        this.tail.prev = this.head;
+        this.list = [];
+        this.map = new Map();
     }
 
-    private _remove(node: Node) {
-        let prev = node.prev!;
-        let next = node.next!;
-        prev.next = next;
-        next.prev = prev;
-    }
-
-    private _add(node: Node) {
-        let next = this.head.next!;
-        this.head.next = node;
-        node.prev = this.head;
-        node.next = next;
-        next.prev = node;
-    }
-
-    get(key: any): any | null {
-        if (!this.cache.has(key)) return null;
-        let node = this.cache.get(key)!;
-        this._remove(node);
-        this._add(node);
-        return node.value;
-    }
-
-    put(key: any, value: any): void {
-        if (this.cache.has(key)) {
-            this._remove(this.cache.get(key)!);
+    get(key: number): any | undefined {
+        if (!this.map.has(key)) {
+            return undefined;
         }
-        let newNode = new Node(key, value);
-        this._add(newNode);
-        this.cache.set(key, newNode);
-
-        if (this.cache.size > this.capacity) {
-            let lru = this.tail.prev!;
-            this._remove(lru);
-            this.cache.delete(lru.key);
-        }
+        // Move the accessed item to the end of the list (most recent)
+        const value = this.map.get(key);
+        this.list = this.list.filter(item => item !== key);
+        this.list.push(key);
+        return value;
     }
 
-    getMostRecent(): any[] {
-        let result: any[] = [];
-        let current = this.head.next;
-        while (current !== this.tail && current !== null && result.length < 3) {
-            result.push(current?.value);
-            current = current.next;
+    put(key: number, value: any): void {
+        if (this.map.has(key)) {
+            // Update existing value and move to the end of the list
+            this.list = this.list.filter(item => item !== key);
+        } else if (this.list.length >= this.capacity) {
+            // Remove the oldest item (first in the list)
+            const oldestKey = this.list.shift()!;
+            this.map.delete(oldestKey);
         }
-        return result;
+        this.list.push(key);
+        this.map.set(key, value);
+    }
+
+    getAll(): any[] {
+        // Convert the list to the cache values in the required order
+        return this.list.map(key => this.map.get(key));
     }
 }
 
-export default LRUCache;
+const userCaches: Map<number, LRUCache> = new Map();
+
+const getUserCache = (userId: number): LRUCache => {
+    if (!userCaches.has(userId)) {
+        userCaches.set(userId, new LRUCache(3)); // Assuming a capacity of 3
+    }
+    return userCaches.get(userId)!;
+};
+
+export { LRUCache, getUserCache };

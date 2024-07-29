@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
+
+// @ts-ignore 
 import Particle from './RedParticle.jsx';
+
+// @ts-ignore
 import Particles from './CurrentParticle.jsx'
 
 interface Question {
@@ -152,7 +156,7 @@ const StarterPokemonPage: React.FC = () => {
                     },
                 });
                 setUser(userResponse.data.user);
-                setRecentPokemon(userResponse.data.recentPokemon);
+                setRecentPokemon(userResponse.data.recentPokemon.reverse());
 
                 if (userResponse.data.topPokemon && Array.isArray(userResponse.data.topPokemon)) {
 
@@ -259,7 +263,6 @@ const StarterPokemonPage: React.FC = () => {
             
             {/* Left Section */}
             <div className="w-1/4 p-4 bg-gray-200">
-            <Particle></Particle>
                 <h2 className="text-2xl font-bold mb-4">Username: {user?.username}</h2>
                 <h2 className="text-2xl font-bold mb-4">Recently Viewed:</h2>
                 {recentPokemon.length > 0 && (
