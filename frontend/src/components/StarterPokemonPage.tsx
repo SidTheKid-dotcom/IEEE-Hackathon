@@ -42,7 +42,46 @@ interface JWTtoken {
 }
 
 const questions: Question[] = [
-    // (Questions array remains unchanged)
+    {
+        question: "You find a mysterious egg, what do you do?",
+        answers: ["Carefully nurture it with plants", "Keep it warm and protected", "Place it in a safe, water-filled basin"],
+    },
+    {
+        question: "Which of these activities sounds most appealing to you?",
+        answers: ["Creating a small garden in your backyard", "Building a cozy campfire and cooking outdoors", "Crafting a small boat and sailing it on a pond"],
+    },
+    {
+        question: "In a group project, what role do you usually take?",
+        answers: ["The planner who organizes and gathers resources", "The motivator who keeps everyone energetic and focused", "The mediator who ensures smooth communication and harmony"],
+    },
+    {
+        question: "How would your friends describe your personality?",
+        answers: ["Steady and reliable", "Enthusiastic and dynamic", "Calm and adaptable"],
+    },
+    {
+        question: "What kind of book would you most likely pick up?",
+        answers: ["A guide on herbal remedies", "An adventure novel", "A book on marine life"],
+    },
+    {
+        question: "Which of these best describes your ideal vacation?",
+        answers: ["Visiting botanical gardens and nature reserves", "Hiking up scenic mountains and exploring caves", "Relaxing on a beach and exploring underwater reefs"],
+    },
+    {
+        question: "How do you react to sudden changes in plans?",
+        answers: ["Adjust calmly and come up with a new plan", "Tackle the changes with enthusiasm and energy", "Go with the flow and adapt as needed"],
+    },
+    {
+        question: "Which quote resonates most with you?",
+        answers: ["Growth is a slow process, but it’s worth it.", "Life is an adventure, embrace it with all your heart.", "Stay calm and let the current guide you."],
+    },
+    {
+        question: "Which of these elements do you feel most connected to?",
+        answers: ["Earth", "Fire", "Water"],
+    },
+    {
+        question: "If you could have any superpower, what would it be?",
+        answers: ["The ability to control plants and nature", "The power to create and control fire", "The ability to breathe underwater and control water"],
+    },
 ];
 
 const StarterPokemonPage: React.FC = () => {
@@ -225,7 +264,7 @@ const StarterPokemonPage: React.FC = () => {
                     <ul className="flex flex-col gap-4">
                         {recentPokemon.map((pokemon, index) => (
                             <li onClick={() => handleNavigatePokemon(pokemon.id)} key={index} className="bg-white shadow-lg rounded-lg p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-100">
-                                <img src={pokemon.sprites.front_default} alt={pokemon.name} className="w-16 h-16 object-cover rounded-full border border-gray-300" />
+                                <img src={pokemon.sprites.front_default} alt={pokemon.name} className="w-16 h-16 object-cover rounded-full " />
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-800">{pokemon.name}</h3>
                                 </div>
