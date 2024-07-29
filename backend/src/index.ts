@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import authMiddleware from './authMiddleware';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { increaseXP, increaseActivity } from './commonFunctions';
+import { increaseXP, increaseActivity, getLRUCache } from './commonFunctions';
 import { getUserCache } from './LRUCache';
 
 
@@ -120,8 +120,7 @@ app.get('/user/:userId', authMiddleware, async (req: AuthRequest, res: Response)
         });
         
         // Get user ID from the auth middleware
-        const userCache = getUserCache(Number(userId));
-        const recentPokemon = userCache.getAll();
+        const recentPokemon = getLRUCache(Number(userId));
 
         //const recentPokemon = lruCache.getMostRecent();
 
@@ -170,7 +169,7 @@ app.post('/updateRecentPokemons', authMiddleware, (req: AuthRequest, res: Respon
     
     const userCache = getUserCache(req.userID as number);
     userCache.put(pokemonId, pokemonData);
-    
+
     res.sendStatus(200);
 });
 
