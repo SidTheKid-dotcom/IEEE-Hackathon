@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import authMiddleware from './authMiddleware';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { increaseXP } from './commonFunctions';
+import { increaseXP, increaseActivity } from './commonFunctions';
 
 
 // Load environment variables from .env file
@@ -102,10 +102,26 @@ app.post('/signin', async (req: Request, res: Response) => {
 });
 
 // Route: Get user info
-app.get('/user', authMiddleware, async (req: AuthRequest, res: Response) => {
+app.get('/user/:userId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
+        const { userId } = req.params;
+
         const user = await prisma.user.findUnique({ where: { id: req.userID as number } });
-        res.status(200).json({ user });
+        const topPokemon = await prisma.activity.findMany({
+            where: {
+                user_id: parseInt(userId, 10),
+            },
+            select: {
+                pokemonId: true,
+                activity: true,
+            },
+            orderBy: {
+                activity: 'desc',
+            },
+            take: 5,
+        });
+
+        res.status(200).json({ user: user, topPokemon: topPokemon});
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving user', error: (error as Error).message });
     }
@@ -149,6 +165,17 @@ app.post('/addFavouritePokemon', authMiddleware, async (req: AuthRequest, res: R
     try {
         const { pokemon_id, pokemon_name } = req.body;
 
+        const existingFavourite = await prisma.favorite.findFirst({
+            where: {
+                pokemon_id: pokemon_id as number,
+                user_id: req.userID as number,
+            },
+        });
+
+        if (existingFavourite) {
+            return res.status(400).json({ message: "Pokemon already in favorites" });
+        }
+
         const newFavorite = await prisma.favorite.create({
             data: {
                 pokemon_id: pokemon_id as number,
@@ -159,6 +186,8 @@ app.post('/addFavouritePokemon', authMiddleware, async (req: AuthRequest, res: R
 
         // Increase XP after adding a favorite Pokémon
         const xpResponse = await increaseXP(req.userID as number, 10);
+
+        await increaseActivity(req.userID as number, pokemon_id as number, 50);
 
         res.status(201).json({ message: "New Favorite Added", newFavorite, xpResponse });
     } catch (error) {
@@ -209,6 +238,7 @@ app.post('/ratePokemon', authMiddleware, async (req: AuthRequest, res: Response)
 
         // increase xp
         const xpResponse = await increaseXP(req.userID as number, 30);
+        await increaseActivity(req.userID as number, pokemon_id as number, rating * 10);
 
         res.status(201).json({ message: "Pokemon rated successfully", newRating, xpResponse });
     } catch (error) {
@@ -220,7 +250,7 @@ app.post('/ratePokemon', authMiddleware, async (req: AuthRequest, res: Response)
 app.put('/updateRating/:ratingId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { ratingId } = req.params;
-        const { rating } = req.body;
+        const { rating, pokemon_id } = req.body;
 
         const updatedRating = await prisma.rating.updateMany({
             where: {
@@ -234,6 +264,7 @@ app.put('/updateRating/:ratingId', authMiddleware, async (req: AuthRequest, res:
 
         // increase xp
         const xpResponse = await increaseXP(req.userID as number, 10);
+        await increaseActivity(req.userID as number, pokemon_id as number, parseInt(rating, 10) * 10);
 
         res.status(200).json({ message: "Rating updated successfully", updatedRating, xpResponse });
     } catch (error) {
@@ -245,6 +276,7 @@ app.put('/updateRating/:ratingId', authMiddleware, async (req: AuthRequest, res:
 app.delete('/deleteRating/:ratingId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { ratingId } = req.params;
+        const { pokemon_id } = req.body;
 
         await prisma.rating.deleteMany({
             where: {
@@ -252,6 +284,9 @@ app.delete('/deleteRating/:ratingId', authMiddleware, async (req: AuthRequest, r
                 user_id: req.userID as number,
             },
         });
+
+
+        await increaseActivity(req.userID as number, pokemon_id as number, -20);
 
         res.status(200).json({ message: "Rating deleted successfully" });
     } catch (error) {
@@ -274,6 +309,7 @@ app.post('/commentPokemon', authMiddleware, async (req: AuthRequest, res: Respon
 
         // increase xp
         const xpResponse = await increaseXP(req.userID as number, 20);
+        await increaseActivity(req.userID as number, pokemon_id as number, 30);
 
         res.status(201).json({ message: "Commented on Pokemon successfully", newComment, xpResponse });
     } catch (error) {
@@ -285,7 +321,7 @@ app.post('/commentPokemon', authMiddleware, async (req: AuthRequest, res: Respon
 app.put('/updateComment/:commentId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { commentId } = req.params;
-        const { comment } = req.body;
+        const { comment, pokemon_id } = req.body;
 
         const updatedComment = await prisma.comment.updateMany({
             where: {
@@ -299,6 +335,7 @@ app.put('/updateComment/:commentId', authMiddleware, async (req: AuthRequest, re
 
         // increase xp
         const xpResponse = await increaseXP(req.userID as number, 10);
+        await increaseActivity(req.userID as number, pokemon_id as number, 10);
 
         res.status(200).json({ message: "Comment updated successfully", updatedComment, xpResponse });
     } catch (error) {
@@ -310,6 +347,7 @@ app.put('/updateComment/:commentId', authMiddleware, async (req: AuthRequest, re
 app.delete('/deleteComment/:commentId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { commentId } = req.params;
+        const { pokemon_id } = req.body;
 
         await prisma.comment.deleteMany({
             where: {
@@ -317,6 +355,9 @@ app.delete('/deleteComment/:commentId', authMiddleware, async (req: AuthRequest,
                 user_id: req.userID as number,
             },
         });
+
+
+        await increaseActivity(req.userID as number, pokemon_id as number, -20);
 
         res.status(200).json({ message: "Comment deleted successfully" });
     } catch (error) {
@@ -382,10 +423,11 @@ app.post("/upload", upload.single("file"), async (req: AuthRequest, res: Respons
         ]);
 
         const pokemonId = result.response.text();
-        console.log(result.response.text());
 
         // increase xp
         //await increaseXP(req.userID as number, 20);
+
+        await increaseActivity(req.userID as number, parseInt(pokemonId, 10), 30);
 
         res.json({
             message: `File uploaded successfully: ${req.file.filename}`,

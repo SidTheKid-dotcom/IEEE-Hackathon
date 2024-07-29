@@ -7,6 +7,10 @@ interface IncreaseXPResponse {
   updatedUser: any;
 }
 
+interface IncreaseActivityResponse {
+  message: string;
+}
+
 export async function increaseXP(userID: number, xp: number): Promise<IncreaseXPResponse> {
   // Fetch the current XP and Level
   const user = await prisma.user.findUnique({
@@ -43,4 +47,36 @@ export async function increaseXP(userID: number, xp: number): Promise<IncreaseXP
   });
 
   return { message: 'XP increased successfully', user, updatedUser };
+}
+
+export async function increaseActivity(userID: number, pokemonId: number, increment: number): Promise<IncreaseActivityResponse> {
+  // Fetch the current XP and Level
+
+  const pokemon = await prisma.activity.findFirst({
+    where: { user_id: userID, pokemonId: pokemonId },
+  });
+
+  if (!pokemon) {
+    await prisma.activity.create({
+      data: {
+        user_id: userID,
+        pokemonId: pokemonId,
+        activity: increment,
+      },
+    })
+
+    return { message: 'Activity increased successfully' };
+  }
+
+  // Calculate new activity 
+  const newActivity = pokemon.activity + increment;
+
+    const newPokemon = await prisma.activity.update({
+      where: { id: pokemon.id, pokemonId: pokemonId },
+      data: {
+        activity: newActivity,
+      },
+    })
+
+  return { message: 'XP increased successfully' };
 }

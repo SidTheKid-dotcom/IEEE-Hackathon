@@ -21,6 +21,7 @@ model User {
   favorites         Favorite[]
   ratings           Rating[]
   comments          Comment[]
+  Activity          Activity[]
 }
 
 model Favorite {
@@ -51,4 +52,14 @@ model Comment {
   user       User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id], name: "idx_comment_user_id")
+}
+
+model Activity {
+  id        Int  @id @default(autoincrement())
+  pokemonId Int
+  activity  Int
+  user_id   Int
+  user      User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_activity_user_id")
 }
