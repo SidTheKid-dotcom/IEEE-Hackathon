@@ -3,6 +3,7 @@ import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 import Particle from './RedParticle.jsx';
+import Particles from './CurrentParticle.jsx'
 
 interface Question {
     question: string;
@@ -255,9 +256,10 @@ const StarterPokemonPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 flex bg-profile-background-image bg-cover">
-            <Particle></Particle>
+            
             {/* Left Section */}
             <div className="w-1/4 p-4 bg-gray-200">
+            <Particle></Particle>
                 <h2 className="text-2xl font-bold mb-4">Username: {user?.username}</h2>
                 <h2 className="text-2xl font-bold mb-4">Recently Viewed:</h2>
                 {recentPokemon.length > 0 && (
@@ -274,24 +276,32 @@ const StarterPokemonPage: React.FC = () => {
                 )}
             </div>
 
-            {/* Middle Section */}
-            <div className="w-1/2 p-4 bg-gray-100 flex flex-col items-center justify-center">
-                {/* This section will be left blank or used for other content */}
-                <h2 className="text-2xl font-bold mb-4">Your Top Pokemon:</h2>
-                {topPokemon.length > 0 && (
-                    <ul className="flex flex-col gap-4">
-                        {topPokemon.map((pokemon, index) => (
-                            <li onClick={() => handleNavigatePokemon(pokemon.id)} key={index} className="bg-white shadow-md rounded-lg p-4 flex items-center gap-4 hover:bg-gray-100 transition-colors">
-                                <img src={pokemon.imageUrl} alt={pokemon.name} className="w-16 h-16 object-cover" />
-                                <div>
-                                    <h3 className="text-lg font-bold text-gray-800">{pokemon.name}</h3>
-                                    <p className="text-gray-600">Activity: {pokemon.activity}</p>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+          {/* Middle Section */}
+<div className="w-1/2 p-4 bg-gray-100 flex flex-col items-center justify-center">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
+        <h2 className="text-2xl font-bold mb-4 text-center">Your Top Pokémon:</h2>
+        {topPokemon.length > 0 ? (
+            <ul className="flex flex-col gap-4">
+                {topPokemon.map((pokemon, index) => (
+                    <li 
+                        onClick={() => handleNavigatePokemon(pokemon.id)} 
+                        key={index} 
+                        className="bg-white shadow-md rounded-lg p-4 flex items-center gap-4 hover:bg-gray-100 transition-colors cursor-pointer"
+                    >
+                        <img src={pokemon.imageUrl} alt={pokemon.name} className="w-16 h-16 object-cover" />
+                        <div className="flex flex-col">
+                            <h3 className="text-lg font-bold text-gray-800">{pokemon.name}</h3>
+                            <p className="text-gray-600">Activity: {pokemon.activity}</p>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        ) : (
+            <p className="text-center text-gray-600">No top Pokémon available</p>
+        )}
+    </div>
+</div>
+
 
             {/* Right Section */}
             <div className="w-7/12 p-4 bg-white">
