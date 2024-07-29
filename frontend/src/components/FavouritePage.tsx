@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Particles from './RedParticle.jsx';
 
 interface Pokemon {
     id: number;
@@ -79,25 +80,28 @@ const FavouritePage: React.FC = () => {
     }
 
     return (
-        <div className="p-4">
-            <h1 className="text-3xl font-bold mb-4">Favorite Pokémon</h1>
-            {error && <p className="text-red-500">{error}</p>}
-            <ul className="space-y-4">
-                {favorites.map((pokemon) => (
-                    <li
-                        key={pokemon.id}
-                        className="flex items-center space-x-4 p-2 bg-white shadow-md rounded-lg hover:bg-gray-100 cursor-pointer"
-                        //onMouseEnter={() => playSound(pokemon.soundUrl)}
-                        onClick={() =>{
-                            console.log(pokemon);
-                            redirectPokemonPage(pokemon.id)}}
-                    >
-                        <img src={pokemon.imageUrl} alt={pokemon.pokemon_name} className="w-16 h-16" />
-                        <span className="text-xl font-medium">{pokemon.pokemon_name}</span>
-                    </li>
-                ))}
-            </ul>
+        <div className="p-4 bg-gray-100 min-h-screen">
+            <Particles></Particles>
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold mb-6 text-center text-yellow-500">Favorite Pokémon</h1>
+          {error && <p className="text-red-500">{error}</p>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {favorites.map((pokemon) => (
+              <div
+                key={pokemon.id}
+                className="flex flex-col items-center p-4 bg-white shadow-lg rounded-lg hover:bg-yellow-100 transition duration-300 transform hover:scale-105 cursor-pointer"
+                onClick={() => {
+                  console.log(pokemon);
+                  redirectPokemonPage(pokemon.id);
+                }}
+              >
+                <img src={pokemon.imageUrl} alt={pokemon.pokemon_name} className="w-24 h-24 mb-4" />
+                <span className="text-xl font-medium text-gray-800">{pokemon.pokemon_name}</span>
+              </div>
+            ))}
+          </div>
         </div>
+      </div>
     );
 };
 
