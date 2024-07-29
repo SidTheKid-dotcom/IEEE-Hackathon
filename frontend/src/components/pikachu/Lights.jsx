@@ -5,7 +5,7 @@ const Lights = () => {
     
     <group name="lights">
  
-      <Environment resolution={256}>
+      {/* <Environment resolution={256}>
         <group>
    
           <Lightformer
@@ -24,7 +24,7 @@ const Lights = () => {
             rotation-y={Math.PI / 2}
           />
         </group>
-      </Environment>
+      </Environment> */}
 
      
       <spotLight
@@ -37,12 +37,13 @@ const Lights = () => {
       />
      
       <spotLight
-        position={[30, 15, 30]}
+        position={[-30, 100, 100]}
         angle={30}
         penumbra={1}
         decay={0.1}
         intensity={6}
       />
+  
     </group>
   );
 };

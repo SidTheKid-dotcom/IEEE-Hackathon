@@ -291,8 +291,11 @@ const PokemonMap: React.FC<PokemonMapProps> = ({ pokemonId }) => {
 
     return (
         <div className="map-container">
-            {pokemonRegion && <h2>{pokemonRegion} Region</h2>}
-            {pokemonName && <h3>{pokemonName}</h3>}
+            <div className='flex w-full bg-slate-800  gap-1 flex-col justify-center items-center'>
+
+            {pokemonRegion && <h2 className='oa '>{pokemonRegion} Region</h2>}
+            {pokemonName && <h3 className='oa'>{pokemonName}</h3>}
+            </div>
             
             {pokemonRegion && <img src={`/${pokemonRegion}_Map.jpg`} alt={`${pokemonRegion} Region Map`} className="map-image" />}
             {encounters.map((encounter, index) => {

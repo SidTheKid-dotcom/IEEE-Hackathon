@@ -16,7 +16,9 @@
 
 .pokemon-location li {
     font-size: 1.2em;
-    color:black;
+    /* color: blue; */
+    color: white; 
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     font-weight: bold;
     margin: 5px 0;
 }

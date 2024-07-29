@@ -51,7 +51,7 @@ const PokemonLocation: React.FC<{ pokemonId: number }> = ({ pokemonId }) => {
     if (error) return <p>{error}</p>;
 
     return (
-        <div className="pokemon-location">
+        <div className="pokemon-location z-50">
             <h2>Location Areas for {pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1)}</h2>
             <ul>
                 {locations.length > 0 ? (

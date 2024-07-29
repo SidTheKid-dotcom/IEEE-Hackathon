@@ -1,4 +1,5 @@
 import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
+
 import './styles.css';
 
 interface Pokemon {
@@ -66,6 +67,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon }) => {
 
   return (
     <div className="pokemon-card" style={{ background: `linear-gradient(to bottom, ${getTypeColor(pokemon.types[0].type.name)} 0%, #fff 100%)` }}>
+      
       <button className="sound-button" onClick={() => playPokemonSound(pokemon.name)}>
         <img src="sound-icon.png" alt="Sound" />
       </button>

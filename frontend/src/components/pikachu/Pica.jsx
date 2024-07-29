@@ -1,28 +1,48 @@
 
 
 
+
+
+
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 
  function Pica(props) {
-  const { nodes, materials } = useGLTF('/models/pica.glb')
+  const { nodes, materials } = useGLTF('/models/pikachu.glb')
   return (
     <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.pikachu_slowpoke.geometry}
-        material={materials.pikachu_slowpoke0}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.002}
-      />
+      <group rotation={[-70 , 0, 0]}>
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.Object_2.geometry}
+          material={materials['PikachuDh_PikachuDh.png']}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.Object_3.geometry}
+          material={materials['PikachuEyeDh_PikachuEyeDh.png']}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.Object_4.geometry}
+          material={materials['PikachuHohoDh_PikachuHohoDh.png']}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.Object_5.geometry}
+          material={materials['PikachuMouthDh_PikachuMouthDh.png']}
+        />
+      </group>
     </group>
   )
 }
 export default Pica
 
-useGLTF.preload('/models/pica.glb')
-
+useGLTF.preload('/models/pikachu.glb')
 
 
 // import React, { useRef } from 'react'

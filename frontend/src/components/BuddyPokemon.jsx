@@ -31,10 +31,10 @@ const BuddyPokemon = () => {
   useEffect(() => {
   
     gsap.fromTo(".bone", { translateX: -50, opacity: 0 }, { duration: 4, ease: "elastic", translateX: 0, opacity: 1 })
-    gsap.to('.please',{translateX:0,opacity:1,delay:1,stagger:0.4})
+    // gsap.to('.please',{translateX:0,opacity:1,delay:1,stagger:0.4})
     // .to('.please',{opacity:0,translateX:200},{opacity:1,translateX:0,duration:1,})
     // gsap.fromTo('.bone',{opacity:0,translateX:-20,scale:0},{scale:1,opacity:1,translateY:0,delay:1.5,stagger:0.2,translateX:0})
-    gsap.fromTo('.final', { opacity: 0, translateX: 20 }, { opacity: 1, delay: 2, stagger: 0.2, ease: "powerin.out", translateX: 0 })
+    // gsap.fromTo('.final', { opacity: 0, translateX: 20 }, { opacity: 1, delay: 2, stagger: 0.2, ease: "powerin.out", translateX: 0 })
     // gsap.fromTo('.chatter',{opacity:0,rotateX:0},{opacity:1,rotateX:360})
 
 
