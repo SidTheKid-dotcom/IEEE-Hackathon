@@ -94,6 +94,7 @@ const StarterPokemonPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [user, setUser] = useState<User | null>(null);
     const [topPokemon, setTopPokemon] = useState<Activity[]>([]);
+    const [recentPokemon, setRecentPokemon] = useState<any[]>([]);
 
     const navigate = useNavigate();
 
@@ -149,8 +150,7 @@ const StarterPokemonPage: React.FC = () => {
                     },
                 });
                 setUser(userResponse.data.user);
-
-                console.log('User response data:', userResponse.data);
+                setRecentPokemon(userResponse.data.recentPokemon);
 
                 if (userResponse.data.topPokemon && Array.isArray(userResponse.data.topPokemon)) {
 
@@ -169,8 +169,6 @@ const StarterPokemonPage: React.FC = () => {
                     const pokemonDataArray = await Promise.all(pokemonPromises);
 
                     setTopPokemon(pokemonDataArray);
-
-                    console.log('Fetched Pokémon data:', pokemonDataArray);
                 }
             } catch (error) {
                 console.error('Failed to fetch user data', error);
@@ -180,8 +178,8 @@ const StarterPokemonPage: React.FC = () => {
             }
         };
 
-        fetchChosenPokemon();
         fetchUserData();
+        fetchChosenPokemon();
 
     }, []);
 
@@ -255,10 +253,29 @@ const StarterPokemonPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 flex">
+        <div className="min-h-screen bg-gray-100 flex bg-profile-background-image bg-cover">
             {/* Left Section */}
             <div className="w-1/4 p-4 bg-gray-200">
                 <h2 className="text-2xl font-bold mb-4">Username: {user?.username}</h2>
+                <h2 className="text-2xl font-bold mb-4">Recently Viewed:</h2>
+                {recentPokemon.length > 0 && (
+                    <ul className="flex flex-col gap-4">
+                        {recentPokemon.map((pokemon, index) => (
+                            <li onClick={() => handleNavigatePokemon(pokemon.id)} key={index} className="bg-white shadow-md rounded-lg p-4 flex items-center gap-4 hover:bg-gray-100 transition-colors">
+                                <img src={pokemon.sprites.front_default} alt={pokemon.name} className="w-16 h-16 object-cover" />
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-800">{pokemon.name}</h3>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+
+            {/* Middle Section */}
+            <div className="w-1/2 p-4 bg-gray-100 flex flex-col items-center justify-center">
+                {/* This section will be left blank or used for other content */}
+                <h2 className="text-2xl font-bold mb-4">Your Top Pokemon:</h2>
                 {topPokemon.length > 0 && (
                     <ul className="flex flex-col gap-4">
                         {topPokemon.map((pokemon, index) => (
@@ -272,11 +289,6 @@ const StarterPokemonPage: React.FC = () => {
                         ))}
                     </ul>
                 )}
-            </div>
-
-            {/* Middle Section */}
-            <div className="w-1/2 p-4 bg-gray-100 flex items-center justify-center">
-                {/* This section will be left blank or used for other content */}
             </div>
 
             {/* Right Section */}

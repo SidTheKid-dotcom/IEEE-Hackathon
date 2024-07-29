@@ -7,6 +7,7 @@ import authMiddleware from './authMiddleware';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { increaseXP, increaseActivity } from './commonFunctions';
+import LRUCache from './LRUCache';
 
 
 // Load environment variables from .env file
@@ -17,6 +18,7 @@ const prisma = new PrismaClient();
 const port = process.env.PORT || 3010;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY as string;
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string;
+const lruCache = new LRUCache(10);
 
 interface AuthRequest extends Request {
     userID?: number;
@@ -118,7 +120,9 @@ app.get('/user/:userId', authMiddleware, async (req: AuthRequest, res: Response)
             take: 3,
         });
 
-        res.status(200).json({ user: user, topPokemon: topPokemon});
+        const recentPokemon = lruCache.getMostRecent();
+
+        res.status(200).json({ user: user, topPokemon: topPokemon, recentPokemon: recentPokemon });
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving user', error: (error as Error).message });
     }
@@ -128,11 +132,14 @@ app.get('/user/:userId', authMiddleware, async (req: AuthRequest, res: Response)
 app.get('/getInfo/:pokemonId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { pokemonId } = req.params;
+        const { pokemonData } = req.body;
         const parsedPokemonId = parseInt(pokemonId, 10);
 
         if (isNaN(parsedPokemonId)) {
             return res.status(400).json({ message: 'Invalid Pokemon ID' });
         }
+
+        lruCache.put(pokemonId, pokemonData);
 
         const userInfo = await prisma.user.findUnique({
             where: { id: req.userID as number },
@@ -155,6 +162,12 @@ app.get('/getInfo/:pokemonId', authMiddleware, async (req: AuthRequest, res: Res
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving state info', error: (error as Error).message });
     }
+});
+
+app.post('/updateRecentPokemons', authMiddleware, (req: AuthRequest, res: Response) => {
+    const { pokemonId, pokemonData } = req.body;
+    lruCache.put(pokemonId, pokemonData);
+    res.sendStatus(200);
 });
 
 // Route: Add favorite pokemon
