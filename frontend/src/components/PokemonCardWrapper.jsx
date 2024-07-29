@@ -285,22 +285,20 @@ const PokemonCardWrapper = () => {
             </div>
           </div>
         </div>
-          <div className='h-2 w-full bg-pu z-20'></div>
-        <div className='flex flex-row justify-around bg-blue-50 item-center w-full '>
-          <img src='../../public/nooo.jpg' alt="" className=' absolute w-full h-full'  />
-          <div className=' absolute backdrop-brightness-50 backdrop-blur-xl  w-full h-full'></div>
-          <div className='flex justify-around flex-col gap-4 items-center w-full h-full z-50'>
-            <div>
-              
-          <img src='../../public/mapp.png' alt="" height="400" width="400"/>
-            </div>
-            <div className='flex flex-row justify-around items-center'>
-
-          <PokemonMap pokemonId={Number(id)} />
-          <PokemonLocation pokemonId={Number(id)}  />
-            </div>
-          </div>
-        </div>
+        <div className="h-2 w-full bg-pu z-20"></div>
+<div className="flex flex-row justify-around bg-blue-50 items-center w-screen h-full relative">
+  <img src="../../public/nooo.jpg" alt="" className="absolute w-screen h-full" />
+  <div className="absolute backdrop-brightness-50 backdrop-blur-xl w-screen h-full"></div>
+  <div className="flex flex-col gap-4 items-center w-full h-full z-50">
+    <div>
+      <img src="../../public/mapp.png" alt="" height="400" width="400" />
+    </div>
+    <div className="flex flex-row justify-around items-center w-full">
+      <PokemonMap pokemonId={Number(id)} />
+      <PokemonLocation pokemonId={Number(id)} />
+    </div>
+  </div>
+</div>
       </div>
     </div>
   );

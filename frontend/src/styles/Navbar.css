@@ -1,3 +1,5 @@
+
+
 :root {
     --navbar-bg-color: #333;
     --navbar-text-color: #fff;
@@ -5,13 +7,36 @@
     --navbar-active-color: #ff6347;
     --underline-height: 3px;
     --transition-duration: 0.3s;
-    --hamburger-menu-width: 250px; /* Width of the menu on smaller screens */
+    --hamburger-menu-width: 250px; 
     --nav-item-spacing: 1.5rem;
     --nav-logo-spacing: 1rem;
     --hamburger-menu-font-size: 2.5rem;
     --hamburger-menu-spacing: 1.5rem;
   }
-  
+  *{
+    font-family: 'Press Start 2P', cursive; 
+  }
+  .darshan9isha {
+    color: white;
+    
+    
+    
+    
+    font-family: 'Press Start 2P', cursive; 
+    font-size: 16px;
+    text-shadow: 1px 1px #000000; /* Slight text shadow for pop */
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.darshan9isha:hover {
+    
+    box-shadow: 0 5px #cb4b01;
+    transform: translateY(-3px) scale(1.1); /* Slightly larger on hover */
+}
+
+
+
   nav {
     display: flex;
     justify-content: space-between;
@@ -76,6 +101,22 @@
   .nav-link.active::after {
     width: 100%;
   }
+
+  .darshan9isha::after {
+    content: '';
+    display: block;
+    height: var(--underline-height);
+    width: 0;
+    background-color: var(--navbar-active-color);
+    transition: width var(--transition-duration);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+  
+  .darshan9isha:hover::after,
+  .darshan9isha:focus::after,
+  
   
   .hamburger-menu {
     display: none;
@@ -120,6 +161,12 @@
     .nav-item {
         margin: 0.5rem 0;
     }
+
+   
+    
     
   }
+  
+
+
   
