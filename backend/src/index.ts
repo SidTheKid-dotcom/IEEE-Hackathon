@@ -6,7 +6,8 @@ import bcrypt from 'bcrypt';
 import authMiddleware from './authMiddleware';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { increaseXP, increaseActivity } from './commonFunctions';
+import { increaseXP, increaseActivity, getLRUCache } from './commonFunctions';
+import { getUserCache } from './LRUCache';
 
 
 // Load environment variables from .env file
@@ -117,8 +118,13 @@ app.get('/user/:userId', authMiddleware, async (req: AuthRequest, res: Response)
             },
             take: 3,
         });
+        
+        // Get user ID from the auth middleware
+        const recentPokemon = getLRUCache(Number(userId));
 
-        res.status(200).json({ user: user, topPokemon: topPokemon});
+        //const recentPokemon = lruCache.getMostRecent();
+
+        res.status(200).json({ user: user, topPokemon: topPokemon, recentPokemon: recentPokemon });
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving user', error: (error as Error).message });
     }
@@ -128,6 +134,7 @@ app.get('/user/:userId', authMiddleware, async (req: AuthRequest, res: Response)
 app.get('/getInfo/:pokemonId', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
         const { pokemonId } = req.params;
+        const { pokemonData } = req.body;
         const parsedPokemonId = parseInt(pokemonId, 10);
 
         if (isNaN(parsedPokemonId)) {
@@ -155,6 +162,15 @@ app.get('/getInfo/:pokemonId', authMiddleware, async (req: AuthRequest, res: Res
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving state info', error: (error as Error).message });
     }
+});
+
+app.post('/updateRecentPokemons', authMiddleware, (req: AuthRequest, res: Response) => {
+    const { pokemonId, pokemonData } = req.body;
+    
+    const userCache = getUserCache(req.userID as number);
+    userCache.put(pokemonId, pokemonData);
+
+    res.sendStatus(200);
 });
 
 // Route: Add favorite pokemon

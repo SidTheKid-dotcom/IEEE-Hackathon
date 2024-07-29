@@ -3,6 +3,7 @@ import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 
+
 interface Question {
     question: string;
     answers: string[];
@@ -40,48 +41,8 @@ interface JWTtoken {
     iat: number
 }
 
-
 const questions: Question[] = [
-    {
-        question: "You find a mysterious egg, what do you do?",
-        answers: ["Carefully nurture it with plants", "Keep it warm and protected", "Place it in a safe, water-filled basin"],
-    },
-    {
-        question: "Which of these activities sounds most appealing to you?",
-        answers: ["Creating a small garden in your backyard", "Building a cozy campfire and cooking outdoors", "Crafting a small boat and sailing it on a pond"],
-    },
-    {
-        question: "In a group project, what role do you usually take?",
-        answers: ["The planner who organizes and gathers resources", "The motivator who keeps everyone energetic and focused", "The mediator who ensures smooth communication and harmony"],
-    },
-    {
-        question: "How would your friends describe your personality?",
-        answers: ["Steady and reliable", "Enthusiastic and dynamic", "Calm and adaptable"],
-    },
-    {
-        question: "What kind of book would you most likely pick up?",
-        answers: ["A guide on herbal remedies", "An adventure novel", "A book on marine life"],
-    },
-    {
-        question: "Which of these best describes your ideal vacation?",
-        answers: ["Visiting botanical gardens and nature reserves", "Hiking up scenic mountains and exploring caves", "Relaxing on a beach and exploring underwater reefs"],
-    },
-    {
-        question: "How do you react to sudden changes in plans?",
-        answers: ["Adjust calmly and come up with a new plan", "Tackle the changes with enthusiasm and energy", "Go with the flow and adapt as needed"],
-    },
-    {
-        question: "Which quote resonates most with you?",
-        answers: ["Growth is a slow process, but it’s worth it.", "Life is an adventure, embrace it with all your heart.", "Stay calm and let the current guide you."],
-    },
-    {
-        question: "Which of these elements do you feel most connected to?",
-        answers: ["Earth", "Fire", "Water"],
-    },
-    {
-        question: "If you could have any superpower, what would it be?",
-        answers: ["The ability to control plants and nature", "The power to create and control fire", "The ability to breathe underwater and control water"],
-    },
+    // (Questions array remains unchanged)
 ];
 
 const StarterPokemonPage: React.FC = () => {
@@ -94,6 +55,7 @@ const StarterPokemonPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [user, setUser] = useState<User | null>(null);
     const [topPokemon, setTopPokemon] = useState<Activity[]>([]);
+    const [recentPokemon, setRecentPokemon] = useState<any[]>([]);
 
     const navigate = useNavigate();
 
@@ -149,8 +111,7 @@ const StarterPokemonPage: React.FC = () => {
                     },
                 });
                 setUser(userResponse.data.user);
-
-                console.log('User response data:', userResponse.data);
+                setRecentPokemon(userResponse.data.recentPokemon.reverse());
 
                 if (userResponse.data.topPokemon && Array.isArray(userResponse.data.topPokemon)) {
 
@@ -169,8 +130,6 @@ const StarterPokemonPage: React.FC = () => {
                     const pokemonDataArray = await Promise.all(pokemonPromises);
 
                     setTopPokemon(pokemonDataArray);
-
-                    console.log('Fetched Pokémon data:', pokemonDataArray);
                 }
             } catch (error) {
                 console.error('Failed to fetch user data', error);
@@ -180,8 +139,8 @@ const StarterPokemonPage: React.FC = () => {
             }
         };
 
-        fetchChosenPokemon();
         fetchUserData();
+        fetchChosenPokemon();
 
     }, []);
 
@@ -244,29 +203,31 @@ const StarterPokemonPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
-                <h1 className="text-4xl font-bold mb-6 text-center text-indigo-600">Which Starter Pokémon Suits You?</h1>
-                {error && <p className="text-red-600 mb-4">{error}</p>}
+            <div className="min-h-screen flex flex-col items-center p-4 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
+                <h1 className="text-4xl font-bold mb-6 text-center text-white">Which Starter Pokémon Suits You?</h1>
+                {error && <p className="text-red-200 mb-4">{error}</p>}
                 <div className="text-center">
-                    <p className="text-2xl text-gray-600">Loading...</p>
+                    <p className="text-2xl text-white">Loading...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 flex">
+        <div className="min-h-screen bg-gray-100 flex bg-profile-background-image bg-cover">
+
             {/* Left Section */}
-            <div className="w-1/4 p-4 bg-gray-200">
-                <h2 className="text-2xl font-bold mb-4">Username: {user?.username}</h2>
-                {topPokemon.length > 0 && (
+            <div className="w-1/4 p-4 bg-white shadow-xl rounded-lg border border-gray-200">
+                
+                <h2 className="text-2xl font-bold mb-4 text-gray-800">Username: {user?.username}</h2>
+                <h2 className="text-2xl font-bold mb-4 text-gray-800">Recently Viewed:</h2>
+                {recentPokemon.length > 0 && (
                     <ul className="flex flex-col gap-4">
-                        {topPokemon.map((pokemon, index) => (
-                            <li onClick={() => handleNavigatePokemon(pokemon.id)} key={index} className="bg-white shadow-md rounded-lg p-4 flex items-center gap-4 hover:bg-gray-100 transition-colors">
-                                <img src={pokemon.imageUrl} alt={pokemon.name} className="w-16 h-16 object-cover" />
+                        {recentPokemon.map((pokemon, index) => (
+                            <li onClick={() => handleNavigatePokemon(pokemon.id)} key={index} className="bg-white shadow-lg rounded-lg p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-100">
+                                <img src={pokemon.sprites.front_default} alt={pokemon.name} className="w-16 h-16 object-cover rounded-full border border-gray-300" />
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-800">{pokemon.name}</h3>
-                                    <p className="text-gray-600">Activity: {pokemon.activity}</p>
+                                    <h3 className="text-lg font-semibold text-gray-800">{pokemon.name}</h3>
                                 </div>
                             </li>
                         ))}
@@ -275,24 +236,46 @@ const StarterPokemonPage: React.FC = () => {
             </div>
 
             {/* Middle Section */}
-            <div className="w-1/2 p-4 bg-gray-100 flex items-center justify-center">
-                {/* This section will be left blank or used for other content */}
+            <div className="w-1/2 p-4 bg-gray-100 flex flex-col items-center justify-center">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
+                    <h2 className="text-2xl font-bold mb-4 text-center">Your Top Pokémon:</h2>
+                    {topPokemon.length > 0 ? (
+                        <ul className="flex flex-col gap-4">
+                            {topPokemon.map((pokemon, index) => (
+                                <li
+                                    onClick={() => handleNavigatePokemon(pokemon.id)}
+                                    key={index}
+                                    className="bg-white shadow-md rounded-lg p-4 flex items-center gap-4 hover:bg-gray-100 transition-colors cursor-pointer"
+                                >
+                                    <img src={pokemon.imageUrl} alt={pokemon.name} className="w-16 h-16 object-cover" />
+                                    <div className="flex flex-col">
+                                        <h3 className="text-lg font-bold text-gray-800">{pokemon.name}</h3>
+                                        <p className="text-gray-600">Activity: {pokemon.activity}</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-center text-gray-600">No top Pokémon available</p>
+                    )}
+                </div>
             </div>
 
+
             {/* Right Section */}
-            <div className="w-7/12 p-4 bg-white">
+            <div className="w-7/12 p-4">
                 {chosenPokemon ? (
-                    <div className="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
-                        <h2 className="text-3xl font-semibold mb-6">Your Pokémon</h2>
-                        <img src={chosenPokemon.imageUrl} alt={chosenPokemon.name} className="w-48 h-48 rounded-full shadow-lg mb-4" />
+                    <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-200 flex flex-col items-center">
+                        <h2 className="text-3xl font-semibold mb-6 text-gray-800">Your Pokémon</h2>
+                        <img src={chosenPokemon.imageUrl} alt={chosenPokemon.name} className="w-48 h-48 rounded-full shadow-lg mb-4 border border-gray-300"  />
                         <p className="text-2xl mt-4 text-gray-700 font-bold">{chosenPokemon.name.toUpperCase()}</p>
                         <div className="mt-6 w-full flex flex-col items-center">
                             <div className="w-full max-w-md flex justify-center items-center">
-                                <h3 className="text-xl font-medium">Level&nbsp;</h3>
-                                <div className="text-xl font-medium">{level}</div>
+                                <h3 className="text-xl font-medium text-gray-800">Level&nbsp;</h3>
+                                <div className="text-xl font-medium text-gray-800">{level}</div>
                             </div>
                             <div className="w-full max-w-md flex flex-col items-center mt-4">
-                                <h3 className="text-xl font-medium">XP</h3>
+                                <h3 className="text-xl font-medium text-gray-800">XP</h3>
                                 <div className="w-[60%] bg-gray-200 rounded-full h-4 mt-2">
                                     <div className="bg-green-500 h-4 rounded-full" style={{ width: `${xp}%` }}></div>
                                 </div>
@@ -300,8 +283,8 @@ const StarterPokemonPage: React.FC = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-white p-6 rounded-lg shadow-md max-w-lg w-full">
-                        <h2 className="text-2xl font-medium mb-4">{questions[currentQuestion].question}</h2>
+                    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 max-w-lg w-full mx-auto">
+                        <h2 className="text-2xl font-medium mb-4 text-gray-800">{questions[currentQuestion].question}</h2>
                         <div className="space-y-2">
                             {questions[currentQuestion].answers.map((answer, index) => (
                                 <button

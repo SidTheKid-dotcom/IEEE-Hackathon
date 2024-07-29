@@ -59,7 +59,7 @@ const PokemonMap: React.FC<PokemonMapProps> = ({ pokemonId }) => {
 
     const getMarkerIcon = (locationAreaName: string): string | null => {
         const markerIcons: { [key: string]: string } = {
-            'pallet-town-area': 'marker_icon.png',
+            'pallet-town-area': '/public/marker_icon.png',
             'viridian-city-area': '/public/marker_icon.png',
             'pewter-city-area': '/public/marker_icon.png',
             'cerulean-city-area': '/public/marker_icon.png',

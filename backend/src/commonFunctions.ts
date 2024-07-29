@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
+import { getUserCache } from './LRUCache';
 
 interface IncreaseXPResponse {
   message: string;
@@ -71,12 +72,18 @@ export async function increaseActivity(userID: number, pokemonId: number, increm
   // Calculate new activity 
   const newActivity = pokemon.activity + increment;
 
-    const newPokemon = await prisma.activity.update({
-      where: { id: pokemon.id, pokemonId: pokemonId },
-      data: {
-        activity: newActivity,
-      },
-    })
+  const newPokemon = await prisma.activity.update({
+    where: { id: pokemon.id, pokemonId: pokemonId },
+    data: {
+      activity: newActivity,
+    },
+  })
 
   return { message: 'XP increased successfully' };
+}
+
+export function getLRUCache(userId: number) {
+  const userCache = getUserCache(userId);
+  
+  return userCache.getAll();
 }
