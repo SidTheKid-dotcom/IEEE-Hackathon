@@ -111,7 +111,7 @@ const StarterPokemonPage: React.FC = () => {
                     },
                 });
                 setUser(userResponse.data.user);
-                setRecentPokemon(userResponse.data.recentPokemon);
+                setRecentPokemon(userResponse.data.recentPokemon.reverse());
 
                 if (userResponse.data.topPokemon && Array.isArray(userResponse.data.topPokemon)) {
 
