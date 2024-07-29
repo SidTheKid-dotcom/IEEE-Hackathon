@@ -84,11 +84,8 @@ app.post('/signin', async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'User not found' });
         }
 
-        console.log(user);
-
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
-        console.log(isPasswordValid);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Incorrect password' });
         }
@@ -118,7 +115,7 @@ app.get('/user/:userId', authMiddleware, async (req: AuthRequest, res: Response)
             orderBy: {
                 activity: 'desc',
             },
-            take: 5,
+            take: 3,
         });
 
         res.status(200).json({ user: user, topPokemon: topPokemon});
@@ -427,7 +424,7 @@ app.post("/upload", upload.single("file"), async (req: AuthRequest, res: Respons
         // increase xp
         //await increaseXP(req.userID as number, 20);
 
-        await increaseActivity(req.userID as number, parseInt(pokemonId, 10), 30);
+        //await increaseActivity(req.userID as number, parseInt(pokemonId, 10), 30);
 
         res.json({
             message: `File uploaded successfully: ${req.file.filename}`,

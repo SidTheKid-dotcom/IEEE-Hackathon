@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        pokemon: ['"Press Start 2P"', 'cursive'],
+      },
       keyframes: {
         wiggle: {
           '0%': { transform: 'rotate(-3deg)' },

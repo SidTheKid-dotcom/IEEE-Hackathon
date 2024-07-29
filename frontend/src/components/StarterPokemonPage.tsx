@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from 'react-router-dom';
 
 interface Question {
     question: string;
@@ -12,6 +14,32 @@ interface Pokemon {
     imageUrl: string;
     soundUrl: string;
 }
+
+interface User {
+    username: string;
+    buddyPokemon?: number;
+    buddyPokemonLevel?: number;
+    buddyPokemonXP?: number;
+}
+
+interface Activity {
+    id: number;
+    name: string;
+    imageUrl: string;
+    activity: number;
+}
+
+interface PokemonObject {
+    pokemonId: number,
+    activity: number
+}
+
+interface JWTtoken {
+    userID: number,
+    username: String,
+    iat: number
+}
+
 
 const questions: Question[] = [
     {
@@ -64,6 +92,10 @@ const StarterPokemonPage: React.FC = () => {
     const [xp, setXp] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [user, setUser] = useState<User | null>(null);
+    const [topPokemon, setTopPokemon] = useState<Activity[]>([]);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchChosenPokemon = async () => {
@@ -101,8 +133,58 @@ const StarterPokemonPage: React.FC = () => {
             }
         };
 
+        const fetchUserData = async () => {
+            setLoading(true);
+            try {
+                const token = JSON.parse(String(localStorage.getItem('token')));
+                if (!token) return;
+
+                const decoded = jwtDecode(token) as JWTtoken;
+
+                const userId = decoded.userID;
+                const userResponse = await axios.get(`http://localhost:3010/user/${userId}`, {
+                    headers: {
+                        Authorization: token,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                setUser(userResponse.data.user);
+
+                console.log('User response data:', userResponse.data);
+
+                if (userResponse.data.topPokemon && Array.isArray(userResponse.data.topPokemon)) {
+
+                    const pokemonPromises = userResponse.data.topPokemon.map(async (pokemonObj: PokemonObject) => {
+                        const pokemonResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonObj.pokemonId}`);
+                        const pokemon = pokemonResponse.data;
+
+                        return {
+                            id: pokemon.id,
+                            name: pokemon.name,
+                            imageUrl: pokemon.sprites.front_default,
+                            activity: pokemonObj.activity
+                        };
+                    });
+
+                    const pokemonDataArray = await Promise.all(pokemonPromises);
+
+                    setTopPokemon(pokemonDataArray);
+
+                    console.log('Fetched Pokémon data:', pokemonDataArray);
+                }
+            } catch (error) {
+                console.error('Failed to fetch user data', error);
+                setError('Failed to fetch user data');
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchChosenPokemon();
+        fetchUserData();
+
     }, []);
+
 
     const handleAnswer = (answerIndex: number) => {
         const newAnswerCounts = [...answerCounts];
@@ -156,57 +238,87 @@ const StarterPokemonPage: React.FC = () => {
         }
     };
 
-    return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
-            <h1 className="text-4xl font-bold mb-6 text-center text-indigo-600">Which Starter Pokémon Suits You?</h1>
-            {error && <p className="text-red-600 mb-4">{error}</p>}
-            {loading ? (
+    const handleNavigatePokemon = (id: number) => {
+        navigate(`/pokemon/${id}`);
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+                <h1 className="text-4xl font-bold mb-6 text-center text-indigo-600">Which Starter Pokémon Suits You?</h1>
+                {error && <p className="text-red-600 mb-4">{error}</p>}
                 <div className="text-center">
                     <p className="text-2xl text-gray-600">Loading...</p>
                 </div>
-            ) : chosenPokemon ? (
-                <div className="text-center">
-                    <h2 className="text-3xl font-semibold mb-4">Your Pokémon</h2>
-                    <img src={chosenPokemon.imageUrl} alt={chosenPokemon.name} className="w-48 h-48 mx-auto rounded-lg shadow-lg" />
-                    <p className="text-2xl mt-4 text-gray-700 font-bold">{chosenPokemon.name.toUpperCase()}</p>
+            </div>
+        );
+    }
 
-                    <div className="mt-6">
-                        <div className='flex flex-row justify-center'>
-                            <h3 className="text-xl font-medium mb-2">Level&nbsp;</h3>
-                            <div className='text-xl font-medium mb-2'>
-                                {level}
-                            </div>
-                        </div>
-                        <h3 className="text-xl font-medium mt-4 mb-2">XP</h3>
-                        <div className="w-full bg-gray-200 rounded-full">
-                            <div
-                                className="bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full"
-                                style={{ width: `${xp}%` }}
-                            >
-                                {xp}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ) : (
-                <div className="bg-white p-6 rounded-lg shadow-md max-w-lg w-full">
-                    <h2 className="text-2xl font-medium mb-4">{questions[currentQuestion].question}</h2>
-                    <div className="space-y-2">
-                        {questions[currentQuestion].answers.map((answer, index) => (
-                            <button
-                                key={index}
-                                className={`block w-full py-3 px-6 rounded-lg text-white transition-colors ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'
-                                    }`}
-                                onClick={() => handleAnswer(index)}
-                                disabled={loading}
-                            >
-                                {answer}
-                            </button>
+    return (
+        <div className="min-h-screen bg-gray-100 flex">
+            {/* Left Section */}
+            <div className="w-1/4 p-4 bg-gray-200">
+                <h2 className="text-2xl font-bold mb-4">Username: {user?.username}</h2>
+                {topPokemon.length > 0 && (
+                    <ul className="flex flex-col gap-4">
+                        {topPokemon.map((pokemon, index) => (
+                            <li onClick={() => handleNavigatePokemon(pokemon.id)} key={index} className="bg-white shadow-md rounded-lg p-4 flex items-center gap-4 hover:bg-gray-100 transition-colors">
+                                <img src={pokemon.imageUrl} alt={pokemon.name} className="w-16 h-16 object-cover" />
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-800">{pokemon.name}</h3>
+                                    <p className="text-gray-600">Activity: {pokemon.activity}</p>
+                                </div>
+                            </li>
                         ))}
+                    </ul>
+                )}
+            </div>
+
+            {/* Middle Section */}
+            <div className="w-1/2 p-4 bg-gray-100 flex items-center justify-center">
+                {/* This section will be left blank or used for other content */}
+            </div>
+
+            {/* Right Section */}
+            <div className="w-7/12 p-4 bg-white">
+                {chosenPokemon ? (
+                    <div className="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
+                        <h2 className="text-3xl font-semibold mb-6">Your Pokémon</h2>
+                        <img src={chosenPokemon.imageUrl} alt={chosenPokemon.name} className="w-48 h-48 rounded-full shadow-lg mb-4" />
+                        <p className="text-2xl mt-4 text-gray-700 font-bold">{chosenPokemon.name.toUpperCase()}</p>
+                        <div className="mt-6 w-full flex flex-col items-center">
+                            <div className="w-full max-w-md flex justify-center items-center">
+                                <h3 className="text-xl font-medium">Level&nbsp;</h3>
+                                <div className="text-xl font-medium">{level}</div>
+                            </div>
+                            <div className="w-full max-w-md flex flex-col items-center mt-4">
+                                <h3 className="text-xl font-medium">XP</h3>
+                                <div className="w-[60%] bg-gray-200 rounded-full h-4 mt-2">
+                                    <div className="bg-green-500 h-4 rounded-full" style={{ width: `${xp}%` }}></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    {loading && <div className="mt-4 text-center text-gray-600">Loading...</div>}
-                </div>
-            )}
+                ) : (
+                    <div className="bg-white p-6 rounded-lg shadow-md max-w-lg w-full">
+                        <h2 className="text-2xl font-medium mb-4">{questions[currentQuestion].question}</h2>
+                        <div className="space-y-2">
+                            {questions[currentQuestion].answers.map((answer, index) => (
+                                <button
+                                    key={index}
+                                    className={`block w-full py-3 px-6 rounded-lg text-white transition-colors ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'
+                                        }`}
+                                    onClick={() => handleAnswer(index)}
+                                    disabled={loading}
+                                >
+                                    {answer}
+                                </button>
+                            ))}
+                        </div>
+                        {loading && <div className="mt-4 text-center text-gray-600">Loading...</div>}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
