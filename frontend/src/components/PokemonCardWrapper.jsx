@@ -72,9 +72,11 @@ const PokemonCardWrapper = () => {
     if (pokemonData) {
       const stats = document.querySelectorAll('.stat-bar-inner');
       stats.forEach((stat, index) => {
+        const statValue = pokemonData.stats[index].base_stat;
+        const widthPercentage = (statValue / 200) * 100; // Calculate width based on max value of 200
         setTimeout(() => {
-          stat.style.width = `${pokemonData.stats[index].base_stat}%`;
-        }, 200);
+          stat.style.width = `${widthPercentage}%`;
+        }, 100);
       });
       if (audioRef.current && soundUrl) {
         audioRef.current.play().catch(error => {
@@ -83,6 +85,7 @@ const PokemonCardWrapper = () => {
       }
     }
   }, [pokemonData, soundUrl]);
+  
 
   const handleCommentSubmit = async () => {
     if (!hasCommented && comments.trim()) {
@@ -198,7 +201,32 @@ const PokemonCardWrapper = () => {
   if (isEvolving.evolving) {
     return <EvolvingPage prevPokemon={isEvolving.prevPokemon} newPokemon={isEvolving.newPokemon} setIsEvolving={setIsEvolving} />;
   }
+  const getTypeWeakness = (type) => {
+    const typeWeaknesses = {
+      normal: ["fighting"],
+      fighting: ["flying", "psychic", "fairy"],
+      flying: ["rock", "electric", "ice"],
+      poison: ["ground", "psychic"],
+      ground: ["water", "grass", "ice"],
+      rock: ["fighting", "ground", "steel", "water", "grass"],
+      bug: ["flying", "rock", "fire"],
+      ghost: ["ghost", "dark"],
+      steel: ["fighting", "ground", "fire"],
+      fire: ["ground", "rock", "water"],
+      water: ["grass", "electric"],
+      grass: ["flying", "poison", "bug", "fire", "ice"],
+      electric: ["ground"],
+      psychic: ["bug", "ghost", "dark"],
+      ice: ["fighting", "rock", "steel", "fire"],
+      dragon: ["ice", "dragon", "fairy"],
+      dark: ["fighting", "bug", "fairy"],
+      fairy: ["poison", "steel"],
+      unknown: [],
+      shadow: [],
+    };
 
+    return typeWeaknesses[type] || [];
+  };
   return (
     <div className=''>
       <div className="pokemon-container flex flex-col">
@@ -209,13 +237,19 @@ const PokemonCardWrapper = () => {
           </div>
 
           <div className="main-section">
-            <div className="details">
-              <p>ID: {pokemonData.id}</p>
-              <p>Height: {pokemonData.height}</p>
-              <p>Weight: {pokemonData.weight}</p>
-              <p>Abilities: {pokemonData.abilities.map(ability => ability.ability.name).join(', ')}</p>
-              <p>Forms: {pokemonData.forms.map(form => form.name).join(', ')}</p>
-            </div>
+          <div className="details">
+          <p>ID: {pokemonData.id}</p>
+          <p>Height: {pokemonData.height}</p>
+          <p>Weight: {pokemonData.weight}</p>
+          <p>Abilities: {pokemonData.abilities.map(ability => ability.ability.name).join(', ')}</p>
+          <p>Forms: {pokemonData.forms.map(form => form.name).join(', ')}</p>
+          <div className="type-box">
+            <p>Type: {pokemonData.types.map(type => type.type.name).join(', ')}</p>
+          </div>
+          <div className="weakness-box">
+            <p>Weakness: {pokemonData.types.flatMap(type => getTypeWeakness(type.type.name)).join(', ')}</p>
+          </div>
+        </div>
 
             <div className="image-container">
               <img src={pokemonData.sprites.other['official-artwork'].front_default} alt={pokemonData.name} />
