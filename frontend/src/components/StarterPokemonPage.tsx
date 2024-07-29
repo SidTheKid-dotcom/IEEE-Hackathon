@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
+import Particle from './RedParticle.jsx';
 
 interface Question {
     question: string;
@@ -254,6 +255,7 @@ const StarterPokemonPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 flex bg-profile-background-image bg-cover">
+            <Particle></Particle>
             {/* Left Section */}
             <div className="w-1/4 p-4 bg-gray-200">
                 <h2 className="text-2xl font-bold mb-4">Username: {user?.username}</h2>
