@@ -84,13 +84,13 @@ const CameraCaptureUpload: React.FC = () => {
     <div className="camera-container">
       <img src={pokedexImage} alt="Pokedex" className="pokedex-image" />
       <video ref={videoRef} className="video-feed" autoPlay></video>
-      <canvas ref={canvasRef} width="320" height="240" style={{ display: 'none' }}></canvas>
+      <canvas ref={canvasRef} width="320" height="240" className='canvas-feed ml-[28.25rem] mt-[-3rem] scale-[61%]'></canvas>
       <button className="pushable capture-button" onClick={capturePhoto}>
         <span className="shadow"></span>
         <span className="edge"></span>
         <span className="front">Capture Photo</span>
       </button>
-      <p className="status-text">{uploadStatus}</p>
+      <p className="status-text top-[12.5rem] left-[62rem] font-bold text-black">{uploadStatus}</p>
     </div>
   );
 };
