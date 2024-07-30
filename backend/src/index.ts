@@ -485,7 +485,7 @@ app.post("/findYourPokemon", authMiddleware, async (req: AuthRequest, res: Respo
             data: {
                 buddyPokemon: chosenPokemonId as number,
                 buddyPokemonLevel: 5 as number,
-                buddyPokemonXP: 30 as number
+                buddyPokemonXP: 70 as number
             },
         });
     } catch (error) {
