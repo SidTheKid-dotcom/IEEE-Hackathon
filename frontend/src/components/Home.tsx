@@ -3,7 +3,10 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Select from 'react-select';
 import { getPokemons } from '../services/pokemonService';
 import axios from 'axios';
+
+// @ts-ignore
 import Particle from './CurrentParticle.jsx'
+
 import { useNavigate } from 'react-router-dom';
 
 const Home: React.FC = () => {
@@ -158,7 +161,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="bg-blue-100 text-black font-sans">
+    <div className="bg-blue-100 text-black font-sans h-screen">
       <Particle></Particle>
       <div className="container mx-auto text-center py-8">
         <h1 className="text-4xl font-bold text-red-500 mb-8">Pokédex</h1>

@@ -85,7 +85,7 @@ const PokemonCardWrapper = () => {
       }
     }
   }, [pokemonData, soundUrl]);
-  
+
 
   const handleCommentSubmit = async () => {
     if (!hasCommented && comments.trim()) {
@@ -173,6 +173,9 @@ const PokemonCardWrapper = () => {
 
         setIsFavorite(false);
       } else {
+
+        setIsFavorite(true);
+
         const favResponse = await axios.post('http://localhost:3010/addFavouritePokemon', {
           pokemon_id: pokemonId,
           pokemon_name: pokemonName,
@@ -189,7 +192,6 @@ const PokemonCardWrapper = () => {
         if (prevPokemon !== newPokemon) {
           setIsEvolving({ evolving: true, prevPokemon: prevPokemon, newPokemon: newPokemon });
         }
-        setIsFavorite(true);
       }
     }
   };
@@ -233,23 +235,23 @@ const PokemonCardWrapper = () => {
         <div className={`pokemon-card ${pokemonData.types[0].type.name}`}>
           <div className="top-section">
             <h2>{pokemonData.name.charAt(0).toUpperCase() + pokemonData.name.slice(1)}</h2>
-            <div className={`type ${pokemonData.types[0].type.name}`}>{pokemonData.types[0].type.name}</div>
+            {/* <div className={`type ${pokemonData.types[0].type.name}`}>{pokemonData.types[0].type.name}</div> */}
           </div>
 
           <div className="main-section">
-          <div className="details">
-          <p>ID: {pokemonData.id}</p>
-          <p>Height: {pokemonData.height}</p>
-          <p>Weight: {pokemonData.weight}</p>
-          <p>Abilities: {pokemonData.abilities.map(ability => ability.ability.name).join(', ')}</p>
-          <p>Forms: {pokemonData.forms.map(form => form.name).join(', ')}</p>
-          <div className="type-box">
-            <p>Type: {pokemonData.types.map(type => type.type.name).join(', ')}</p>
-          </div>
-          <div className="weakness-box">
-            <p>Weakness: {pokemonData.types.flatMap(type => getTypeWeakness(type.type.name)).join(', ')}</p>
-          </div>
-        </div>
+            <div className="details">
+              <p>ID: {pokemonData.id}</p>
+              <p>Height: {pokemonData.height}</p>
+              <p>Weight: {pokemonData.weight}</p>
+              <p>Abilities: {pokemonData.abilities.map(ability => ability.ability.name).join(', ')}</p>
+              <p>Forms: {pokemonData.forms.map(form => form.name).join(', ')}</p>
+              <div className="type-box">
+                <p>Type: {pokemonData.types.map(type => type.type.name).join(', ')}</p>
+              </div>
+              <div className="weakness-box">
+                <p>Weakness: {pokemonData.types.flatMap(type => getTypeWeakness(type.type.name)).join(', ')}</p>
+              </div>
+            </div>
 
             <div className="image-container">
               <img src={pokemonData.sprites.other['official-artwork'].front_default} alt={pokemonData.name} />
@@ -258,7 +260,7 @@ const PokemonCardWrapper = () => {
             <div className="stats">
               {pokemonData.stats.map((stat, index) => (
                 <div key={stat.stat.name} className="stat">
-                  <div className="stat-name">{stat.stat.name}</div>
+                  <div className="stat-name text-[2.5rem]">{stat.stat.name === 'special-attack' ? 'Sp. Atk' : stat.stat.name === 'special-defense' ? 'Sp. Def' : stat.stat.name}</div>
                   <div className="stat-bar">
                     <div className="stat-bar-inner">{stat.base_stat}</div>
                   </div>
@@ -321,7 +323,7 @@ const PokemonCardWrapper = () => {
               placeholder="Leave a comment..."
               disabled={hasCommented}
             />
-            <button className='yash' onClick={handleCommentSubmit} disabled={hasCommented}>Submit</button>
+            <button className='yash mt-[1rem]' onClick={handleCommentSubmit} disabled={hasCommented}>Submit</button>
             <div className="comments-list">
               {commentList.map((comment, index) => (
                 <p key={index}>{comment}</p>
@@ -329,7 +331,7 @@ const PokemonCardWrapper = () => {
             </div>
           </div>
         </div>
-        <div className="h-2 w-full bg-pu z-20"></div>
+        <div className="h-[60px] w-full "></div>
         <div className="flex flex-row justify-around bg-blue-50 items-center w-screen h-full relative">
           <img src="../../public/nooo.jpg" alt="" className="absolute w-screen h-full" />
           <div className="absolute backdrop-brightness-50 backdrop-blur-xl w-screen h-full"></div>
