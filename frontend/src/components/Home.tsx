@@ -4,6 +4,8 @@ import Select from 'react-select';
 import { getPokemons } from '../services/pokemonService';
 import axios from 'axios';
 
+import PokeballLoader from './PokeballLoader';
+
 // @ts-ignore
 import Particle from './CurrentParticle.jsx'
 
@@ -32,6 +34,8 @@ const Home: React.FC = () => {
   ]);
   const observer = useRef<IntersectionObserver>();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
   const navigate = useNavigate(); // Add this line to use navigation
 
   const lastPokemonElementRef = useCallback(
@@ -56,13 +60,17 @@ const Home: React.FC = () => {
   };
 
   const fetchTypes = async () => {
+    setLoading(true);
     const response = await axios.get('https://pokeapi.co/api/v2/type');
     setTypes(response.data.results.map((type: any) => ({ value: type.name, label: type.name })));
+    setLoading(false);
   };
 
   const fetchAbilities = async () => {
+    setLoading(true);
     const response = await axios.get('https://pokeapi.co/api/v2/ability?limit=1000');
     setAbilities(response.data.results.map((ability: any) => ({ value: ability.name, label: ability.name })));
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -158,6 +166,14 @@ const Home: React.FC = () => {
 
   const navigateToPokemon = (id: number) => {
     navigate(`/pokemon/${id}`);
+  }
+
+  if (loading) {
+    return (
+      <div className='flex justify-center items-center h-screen'>
+        <PokeballLoader />
+      </div>
+    )
   }
 
   return (

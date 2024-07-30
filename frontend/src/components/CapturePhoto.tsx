@@ -3,12 +3,14 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import pokedexImage from '../assets/images/bruhhhy.png';
 import './CapturePhoto.css';
+import PokeballLoader from './PokeballLoader';
 
 const CameraCaptureUpload: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [uploadStatus, setUploadStatus] = useState<string>('Capture your pokemon');
-  
+  const [loading, setLoading] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
   const capturePhoto = () => {
@@ -16,11 +18,11 @@ const CameraCaptureUpload: React.FC = () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
-      
+
       if (context) {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         const dataURL = canvas.toDataURL('image/jpeg');
-        
+
         // Create a Blob from the dataURL (simulate file for FormData)
         const blob = dataURItoBlob(dataURL);
 
@@ -30,7 +32,7 @@ const CameraCaptureUpload: React.FC = () => {
 
         // Update the status text
         setUploadStatus('Finding your pokemon...');
-        
+
         // Call function to upload file
         uploadFile(formData);
       }
@@ -39,6 +41,7 @@ const CameraCaptureUpload: React.FC = () => {
 
   const uploadFile = async (formData: FormData) => {
     try {
+      setLoading(true);
       const response = await fetch('http://localhost:3010/upload', {
         method: 'POST',
         body: formData,
@@ -51,8 +54,10 @@ const CameraCaptureUpload: React.FC = () => {
       } else {
         setUploadStatus('File upload failed');
       }
+      setLoading(false);
     } catch (error) {
       setUploadStatus('An error occurred during file upload');
+      setLoading(false);
     }
   };
 
@@ -80,6 +85,7 @@ const CameraCaptureUpload: React.FC = () => {
       });
   }, []);
 
+
   return (
     <div className="camera-container">
       <img src={pokedexImage} alt="Pokedex" className="pokedex-image" />
@@ -91,6 +97,11 @@ const CameraCaptureUpload: React.FC = () => {
         <span className="front">Capture Photo</span>
       </button>
       <p className="status-text top-[12.5rem] left-[62rem] font-bold text-black">{uploadStatus}</p>
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <PokeballLoader />
+        </div>
+      )}
     </div>
   );
 };

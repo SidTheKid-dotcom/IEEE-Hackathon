@@ -286,15 +286,14 @@ app.put('/updateRating/:ratingId', authMiddleware, async (req: AuthRequest, res:
 });
 
 // Route: Delete rating for a Pokemon
-app.delete('/deleteRating/:ratingId', authMiddleware, async (req: AuthRequest, res: Response) => {
+app.delete('/deleteRating', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
-        const { ratingId } = req.params;
         const { pokemon_id } = req.body;
 
         await prisma.rating.deleteMany({
             where: {
-                id: parseInt(ratingId, 10),
                 user_id: req.userID as number,
+                pokemon_id: parseInt(pokemon_id, 10),
             },
         });
 
@@ -357,15 +356,14 @@ app.put('/updateComment/:commentId', authMiddleware, async (req: AuthRequest, re
 });
 
 // Route: Delete comment for a Pokemon
-app.delete('/deleteComment/:commentId', authMiddleware, async (req: AuthRequest, res: Response) => {
+app.delete('/deleteComment', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
-        const { commentId } = req.params;
         const { pokemon_id } = req.body;
 
         await prisma.comment.deleteMany({
             where: {
-                id: parseInt(commentId, 10),
                 user_id: req.userID as number,
+                pokemon_id: parseInt(pokemon_id, 10),
             },
         });
 

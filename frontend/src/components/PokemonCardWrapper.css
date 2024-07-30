@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Decotura&display=swap'); 
+@import url('https://fonts.googleapis.com/css2?family=Decotura&display=swap');
 
 body {
   background-color: #f0f0f0;
@@ -9,7 +9,7 @@ body {
   height: 100vh;
   width: 100vw;
   overflow-x: hidden;
-} 
+}
 
 .pokemon-container {
   width: 100%;
@@ -143,8 +143,13 @@ body {
 }
 
 @keyframes typing {
-  from { width: 0 }
-  to { width: 100% }
+  from {
+    width: 0
+  }
+
+  to {
+    width: 100%
+  }
 }
 
 .slide-in {
@@ -244,9 +249,10 @@ body {
   font-weight: bold;
   font-size: 1.2vw;
   width: 0;
-  max-width: 300px; /* Add this line */
+  max-width: 300px;
+  /* Add this line */
   transition: width 1s ease-out;
-  background-image: linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.3) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.3) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.3) 75%, transparent 75%, transparent);
   background-size: 20px 20px;
 }
 
@@ -255,8 +261,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top:-80px;
-  margin-top:-40px;
+  padding-top: -80px;
+  margin-top: -40px;
 }
 
 .star {
@@ -302,7 +308,8 @@ body {
   margin: 5px 0;
   font-size: 1.5vw;
 }
-.yash{
+
+.yash {
   border: none;
   outline: none;
   background-color: #6c5ce7;
@@ -317,8 +324,94 @@ body {
   transition: all ease 0.1s;
   box-shadow: 0px 5px 0px 0px #a29bfe;
 }
-.yash:active{
+
+.yash:active {
   transform: translateY(5px);
   box-shadow: 0px 0px 0px 0px #a29bfe;
 }
 
+.pokemon-theme {
+  font-family: 'Press Start 2P', cursive;
+  /* Retro pixelated font */
+  color: #000;
+  /* White text color */
+  background-color: #dddddd;
+  /* Pokémon blue background */
+  border: 3px solid #f39494;
+  /* Pokémon yellow border */
+  border-radius: 10px;
+  /* Rounded corners */
+  padding: 20px;
+  /* Padding inside the div */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  /* Shadow for depth */
+  margin: 20px auto;
+  /* Center and add margin */
+  width: 80%;
+  /* Control width */
+  max-width: 600px;
+  /* Max width for larger screens */
+  text-align: center;
+  /* Center text */
+
+}
+
+.pokemon-theme h3 {
+  font-size: 1.5em;
+  /* Slightly larger for headings */
+  margin-bottom: 10px;
+  /* Space below headings */
+  color: #ffcb05;
+  /* Pokémon yellow for headings */
+}
+
+.pokemon-theme p {
+  font-size: 1.2em;
+  /* Slightly larger for paragraphs */
+  color: #fff;
+  /* White text color */
+}
+
+/* Add these styles to your CSS file */
+
+.rotate-container {
+  /* Make sure this container is centered */
+  transform-style: preserve-3d;
+}
+
+.rotate-sibling-container {
+  display: flex;
+  transform: rotate(0deg);
+  transition: transform 0.5s ease;
+}
+
+.orbit-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+}
+
+/* Rotate items based on horizontal scroll */
+.w-full {
+  width: 100vw;
+  /* Full viewport width */
+}
+
+.overflow-x-scroll {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.scroll-container {
+  display: flex;
+  scroll-snap-align: start;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.bg-card {
+  opacity: 0.8;
+}

@@ -7,15 +7,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Press Start 2P', cursive;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.App {
+  text-align: center;
+}
+
+
+/* styles.css */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  
-  .App {
-    text-align: center;
+
+  100% {
+    transform: rotate(360deg);
   }
-  
-  
+}
+
+.pokeball {
+  width: 50px;
+  height: 50px;
+  background: red;
+  border-radius: 50%;
+  position: relative;
+  animation: spin 1s linear infinite;
+}
+
+.pokeball::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 26px;
+  height: 26px;
+  background: white;
+  border-radius: 50%;
+  border: 2px solid black;
+}

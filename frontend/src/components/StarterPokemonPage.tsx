@@ -3,6 +3,8 @@ import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 
+import PokeballLoader from './PokeballLoader';
+
 
 interface Question {
     question: string;
@@ -100,7 +102,6 @@ const StarterPokemonPage: React.FC = () => {
 
     useEffect(() => {
         const fetchChosenPokemon = async () => {
-            setLoading(true);
             try {
                 const token = JSON.parse(String(localStorage.getItem('token')));
                 if (!token) return;
@@ -129,13 +130,10 @@ const StarterPokemonPage: React.FC = () => {
             } catch (error) {
                 console.error('Failed to fetch chosen Pokémon', error);
                 setError('Failed to fetch chosen Pokémon');
-            } finally {
-                setLoading(false);
             }
         };
 
         const fetchUserData = async () => {
-            setLoading(true);
             try {
                 const token = JSON.parse(String(localStorage.getItem('token')));
                 if (!token) return;
@@ -173,14 +171,13 @@ const StarterPokemonPage: React.FC = () => {
             } catch (error) {
                 console.error('Failed to fetch user data', error);
                 setError('Failed to fetch user data');
-            } finally {
-                setLoading(false);
             }
         };
-
+        
+        setLoading(true);
         fetchUserData();
         fetchChosenPokemon();
-
+        setTimeout(() => {setLoading(false)}, 500);
     }, []);
 
 
@@ -242,12 +239,8 @@ const StarterPokemonPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex flex-col items-center p-4 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
-                <h1 className="text-4xl font-bold mb-6 text-center text-white">Which Starter Pokémon Suits You?</h1>
-                {error && <p className="text-red-200 mb-4">{error}</p>}
-                <div className="text-center">
-                    <p className="text-2xl text-white">Loading...</p>
-                </div>
+            <div className='flex justify-center items-center h-screen'>
+                <PokeballLoader />
             </div>
         );
     }
@@ -257,7 +250,7 @@ const StarterPokemonPage: React.FC = () => {
 
             {/* Left Section */}
             <div className="w-1/4 p-4 bg-white shadow-xl rounded-lg border border-gray-200">
-                
+
                 <h2 className="text-2xl font-bold mb-4 text-gray-800">Username: {user?.username}</h2>
                 <h2 className="text-2xl font-bold mb-4 text-gray-800">Recently Viewed:</h2>
                 {recentPokemon.length > 0 && (
@@ -306,7 +299,7 @@ const StarterPokemonPage: React.FC = () => {
                 {chosenPokemon ? (
                     <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-200 flex flex-col items-center">
                         <h2 className="text-3xl font-semibold mb-6 text-gray-800">Your Pokémon</h2>
-                        <img src={chosenPokemon.imageUrl} alt={chosenPokemon.name} className="w-48 h-48 rounded-full shadow-lg mb-4 border border-gray-300"  />
+                        <img src={chosenPokemon.imageUrl} alt={chosenPokemon.name} className="w-48 h-48 rounded-full shadow-lg mb-4 border border-gray-300" />
                         <p className="text-2xl mt-4 text-gray-700 font-bold">{chosenPokemon.name.toUpperCase()}</p>
                         <div className="mt-6 w-full flex flex-col items-center">
                             <div className="w-full max-w-md flex justify-center items-center">

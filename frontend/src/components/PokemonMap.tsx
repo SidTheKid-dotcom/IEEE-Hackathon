@@ -173,32 +173,32 @@ const PokemonMap: React.FC<PokemonMapProps> = ({ pokemonId }) => {
     const getHighlightStyle = (locationAreaName: string): { top: string; left: string } => {
         const locationStyles: { [key: string]: { top: string; left: string } } = {
             'pallet-town-area': { top: '68%', left: '18%' },
-        
-           'viridian-city-area': { top: '75%', left: '7%' },
-        'pewter-city-area': { top: '20%', left: '18%' },
-        'cerulean-city-area': { top: '22%', left: '65%' },
-         'vermillion-city-area': { top: '74%', left: '27%' },
-        'lavender-town-area': { top: '49%', left: '39%' },
-        'celadon-city-area': { top: '56%', left: '20%' },
-        'fuchsia-city-area': { top: '86%', left: '31%' },
-        'saffron-city-area': { top: '56%', left: '29%' },
-        'cinnabar-island-area': { top: '97%', left: '7%' },
-        'power-plant-area': { top: '20%', left: '51%' },
-        'seafoam-islands-area': { top: '86%', left: '61%' },
-        'rock-tunnel-area': { top: '39%', left: '42%' },
-        'victory-road-area': { top: '7%', left: '23%' },
-        'pokemon-league-area': { top: '5%', left: '24%' },
+
+            'viridian-city-area': { top: '75%', left: '7%' },
+            'pewter-city-area': { top: '20%', left: '18%' },
+            'cerulean-city-area': { top: '22%', left: '65%' },
+            'vermillion-city-area': { top: '74%', left: '27%' },
+            'lavender-town-area': { top: '49%', left: '39%' },
+            'celadon-city-area': { top: '56%', left: '20%' },
+            'fuchsia-city-area': { top: '86%', left: '31%' },
+            'saffron-city-area': { top: '56%', left: '29%' },
+            'cinnabar-island-area': { top: '97%', left: '7%' },
+            'power-plant-area': { top: '20%', left: '51%' },
+            'seafoam-islands-area': { top: '86%', left: '61%' },
+            'rock-tunnel-area': { top: '39%', left: '42%' },
+            'victory-road-area': { top: '7%', left: '23%' },
+            'pokemon-league-area': { top: '5%', left: '24%' },
             // Generation 2 (Johto)
-         'new-bark-town': { top: '80%', left: '92%' },
-        'cherrygrove-city': { top: '75%', left: '84%' },
-        'violet-city': { top: '55%', left: '65%' },
-        'azalea-town': { top: '73%', left: '65%' },
-        'goldenrod-city': { top: '64%', left: '56%' },
-        'ecruteak-city': { top: '46%', left: '55%' },
-        'olivine-city': { top: '50%', left: '40%' },
-        'cianwood-city': { top: '67%', left: '25%' },
-        'mahogany-town': { top: '33%', left: '75%' },
-        'blackthorn-city': { top: '30%', left: '87%' },
+            'new-bark-town': { top: '80%', left: '92%' },
+            'cherrygrove-city': { top: '75%', left: '84%' },
+            'violet-city': { top: '55%', left: '65%' },
+            'azalea-town': { top: '73%', left: '65%' },
+            'goldenrod-city': { top: '64%', left: '56%' },
+            'ecruteak-city': { top: '46%', left: '55%' },
+            'olivine-city': { top: '50%', left: '40%' },
+            'cianwood-city': { top: '67%', left: '25%' },
+            'mahogany-town': { top: '33%', left: '75%' },
+            'blackthorn-city': { top: '30%', left: '87%' },
             // Generation 3 (Hoenn)
             'littleroot-town-area': { top: '85%', left: '22%' },
             'oldale-town-area': { top: '79%', left: '32%' },
@@ -290,13 +290,13 @@ const PokemonMap: React.FC<PokemonMapProps> = ({ pokemonId }) => {
     };
 
     return (
-        <div className="map-container">
-            <div className='flex w-full bg-slate-800  gap-1 flex-col justify-center items-center'>
+        <div className="map-container my-[1.5rem]">
+            <div className='py-[0.5rem] flex w-full bg-slate-800  gap-1 flex-col justify-center items-center'>
 
-            {pokemonRegion && <h2 className='oa '>{pokemonRegion} Region</h2>}
-            {pokemonName && <h3 className='oa'>{pokemonName}</h3>}
+                {pokemonRegion && <h2 className='oa '>{pokemonRegion.toUpperCase()}</h2>}
+                {pokemonName && <h3 className='oa'>{pokemonName.slice(0,1).toUpperCase()+pokemonName.slice(1)}&nbsp;Locations</h3>}
             </div>
-            
+
             {pokemonRegion && <img src={`/${pokemonRegion}_Map.jpg`} alt={`${pokemonRegion} Region Map`} className="map-image" />}
             {encounters.map((encounter, index) => {
                 const markerIcon = getMarkerIcon(encounter.location_area.name);

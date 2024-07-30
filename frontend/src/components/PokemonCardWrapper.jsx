@@ -5,6 +5,7 @@ import './PokemonCardWrapper.css';
 import PokemonLocation from './PokemonLocation';
 import PokemonMap from './PokemonMap';
 import EvolvingPage from './EvolvingPage';
+import PokemonMoves from './PokemonMoves';
 
 
 const PokemonCardWrapper = () => {
@@ -30,6 +31,8 @@ const PokemonCardWrapper = () => {
         const response = await fetch(`${apiUrl}${id}`);
         const data = await response.json();
         setPokemonData(data);
+
+        console.log(data);
 
         const token = JSON.parse(String(localStorage.getItem('token')));
 
@@ -280,6 +283,8 @@ const PokemonCardWrapper = () => {
             {/* <div className={`type ${pokemonData.types[0].type.name}`}>{pokemonData.types[0].type.name}</div> */}
           </div>
 
+          {/* <PokemonMoves moves={pokemonData.moves}/> */}
+
           <div className="main-section">
             <div className="details">
               <p>ID: {pokemonData.id}</p>
@@ -311,82 +316,100 @@ const PokemonCardWrapper = () => {
             </div>
           </div>
 
-          <div className="rating-container">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                className={`star ${hover >= star || rating >= star ? 'hover' : ''} ${hasRating && rating >= star ? 'selected' : ''}`}
-                onMouseEnter={() => !hasRating && setHover(star)}
-                onMouseLeave={() => !hasRating && setHover(null)}
-                onClick={() => !hasRating && handleRateSubmit(star)}
-              >
-                ★
-              </span>
-            ))}
-          </div>
+          <div className='bottom-section grid grid-cols-12'>
+            <div className='col-span-3 mt-[1rem]'>
+              <div className="sound-container w-full flex flex-row justify-center">
+                <button
+                  onClick={handlePlaySound}
+                  className="yash"
+                >
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 19V6l10 7-10 7z"
+                    />
+                  </svg>
+                  <span>Play Sound</span>
+                </button>
+                <audio ref={audioRef} src={soundUrl || ''} preload="auto" />
+              </div>
+            </div>
+            <div className='col-span-6'>
+              <div className="rating-container">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={`star ${hover >= star || rating >= star ? 'hover' : ''} ${hasRating && rating >= star ? 'selected' : ''}`}
+                    onMouseEnter={() => !hasRating && setHover(star)}
+                    onMouseLeave={() => !hasRating && setHover(null)}
+                    onClick={() => !hasRating && handleRateSubmit(star)}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
 
-          {
-            hasRating && <button className="" onClick={handleDeleteRating}>Delete Rating!</button>
-          }
+              <div className="favorite-container text-[1.5rem] flex flex-row justify-center mt-[1rem]">
+                <button
+                  onClick={handleToggleFavorite}
+                  className={`favorite-button ${isFavorite ? 'favorited' : ''}`}
+                >
+                  {isFavorite ? '★ Remove from Favorites' : '☆ Add to Favorites'}
+                </button>
+              </div>
 
-          <div className="sound-container w-full flex flex-row justify-center">
-            <button
-              onClick={handlePlaySound}
-              className="yash"
-            >
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 19V6l10 7-10 7z"
-                />
-              </svg>
-              <span>Play Sound</span>
-            </button>
-            <audio ref={audioRef} src={soundUrl || ''} preload="auto" />
-          </div>
-
-          <div className="favorite-container flex flex-row justify-center mt-[2rem]">
-            <button
-              onClick={handleToggleFavorite}
-              className={`favorite-button ${isFavorite ? 'favorited' : ''}`}
-            >
-              {isFavorite ? '★ Remove from Favorites' : '☆ Add to Favorites'}
-            </button>
-          </div>
-
-          <div className="comment-section">
-            {
-              !hasCommented ? (
-                <div className='w-full flex flex-col justify-center items-center'>
-                  <textarea
-                    value={comments}
-                    onChange={(e) => setComments(e.target.value)}
-                    placeholder="Leave a comment..."
-                    disabled={hasCommented}
-                  />
-                  <button className='yash mt-[1rem]' onClick={handleCommentSubmit} disabled={hasCommented}>Submit</button>
-                </div>
-              ) : (
-                <div>{comments}</div>
-              )}
-            {/* <div className="comments-list">
+              <div className="comment-section">
+                {
+                  !hasCommented ? (
+                    <div className='w-full flex flex-col justify-center items-center'>
+                      <textarea
+                        value={comments}
+                        onChange={(e) => setComments(e.target.value)}
+                        placeholder="Leave a comment..."
+                        disabled={hasCommented}
+                      />
+                      <button className='yash my-[1rem]' onClick={handleCommentSubmit} disabled={hasCommented}>Submit</button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-4">
+                      <h1 className="text-2xl font-bold text-black">Existing Comment:</h1>
+                      <div className="pokemon-theme">
+                        {comments}
+                      </div>
+                    </div>
+                  )}
+                {/* <div className="comments-list">
               {
                 commentList.length > 0 && commentList.map((comment, index) => (
                   <p key={index}>{comment}</p>
                 ))}
             </div> */}
+              </div>
+            </div>
+            <div className='col-span-3 w-full'>
+
+              {
+                hasRating &&
+                <div className='w-full flex justify-center my-[1rem]'>
+                  <button className="yash" onClick={handleDeleteRating}>Delete Rating!</button>
+                </div>
+              }
+              {
+                hasCommented &&
+                <div className='w-full flex justify-center mb-[1rem]'>
+                  <button className='yash mt-[1rem]' onClick={handleDeleteComment}>Delete Comment</button>
+                </div>
+              }
+            </div>
           </div>
-          {
-            hasCommented && <button className='yash mt-[1rem]' onClick={handleDeleteComment}>Delete Comment</button>
-          }
         </div>
         <div className="h-[60px] w-full "></div>
         <div className="flex flex-row justify-around bg-blue-50 items-center w-screen h-full relative">

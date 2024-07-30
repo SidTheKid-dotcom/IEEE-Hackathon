@@ -63,6 +63,6 @@
   white-space: nowrap; /* Prevent text wrapping */
 }
 .oa{
-  color:rgb(160, 160, 20);
+  color:rgb(255, 255, 255);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
