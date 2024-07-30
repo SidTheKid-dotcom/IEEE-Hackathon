@@ -65,7 +65,7 @@ const FavouritePage: React.FC = () => {
                 const validPokemonData = pokemonData.filter(pokemon => pokemon !== null) as Pokemon[];
 
                 setFavorites(validPokemonData);
-                setTimeout(() => {setLoading(false)}, 500);
+                setLoading(false);
             } catch (error) {
                 console.error('Failed to fetch favorites', error);
                 setError('Failed to fetch favorites');

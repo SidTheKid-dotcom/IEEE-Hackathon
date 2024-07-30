@@ -11,7 +11,7 @@ interface PokemonMovesProps {
 
 const PokemonMoves: React.FC<PokemonMovesProps> = ({ moves }) => {
   // Extract the top 4 moves
-  const topMoves = moves.slice(0, 4);
+  const topMoves = moves.slice(16, 20);
 
   return (
     <div className="pokemon-moves p-4 bg-blue-100 rounded-lg shadow-lg">

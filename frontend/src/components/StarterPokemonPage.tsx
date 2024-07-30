@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 import PokeballLoader from './PokeballLoader';
 
+import PokemonMoves from './PokemonMoves';
+
 
 interface Question {
     question: string;
@@ -15,6 +17,7 @@ interface Pokemon {
     id: number;
     name: string;
     imageUrl: string;
+    moves: any;
     soundUrl: string;
 }
 
@@ -113,6 +116,7 @@ const StarterPokemonPage: React.FC = () => {
                     },
                 });
 
+
                 if (response.data.pokemon) {
                     const pokemonResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon/${response.data.pokemon}`);
                     const pokemon = pokemonResponse.data;
@@ -121,6 +125,7 @@ const StarterPokemonPage: React.FC = () => {
                         id: pokemon.id,
                         name: pokemon.name,
                         imageUrl: pokemon.sprites.other['official-artwork'].front_default,
+                        moves: pokemon.moves,
                         soundUrl: `https://play.pokemonshowdown.com/audio/cries/${pokemon.name.toLowerCase()}.mp3`,
                     });
 
@@ -173,11 +178,11 @@ const StarterPokemonPage: React.FC = () => {
                 setError('Failed to fetch user data');
             }
         };
-        
+
         setLoading(true);
         fetchUserData();
         fetchChosenPokemon();
-        setTimeout(() => {setLoading(false)}, 500);
+        setTimeout(() => { setLoading(false) }, 500);
     }, []);
 
 
@@ -222,6 +227,7 @@ const StarterPokemonPage: React.FC = () => {
                     id: pokemon.id,
                     name: pokemon.name,
                     imageUrl: pokemon.sprites.other['official-artwork'].front_default,
+                    moves: pokemon.moves,
                     soundUrl: `https://play.pokemonshowdown.com/audio/cries/${pokemon.name.toLowerCase()}.mp3`,
                 });
             }
@@ -243,6 +249,30 @@ const StarterPokemonPage: React.FC = () => {
                 <PokeballLoader />
             </div>
         );
+    }
+
+    if (!chosenPokemon && !loading) {
+        return (
+            <div className='w-full h-screen flex flex-col justify-center items-center mt-[-5rem]'>
+                <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 max-w-lg w-full mx-auto">
+                    <h2 className="text-2xl font-medium mb-4 text-gray-800">{questions[currentQuestion].question}</h2>
+                    <div className="space-y-2">
+                        {questions[currentQuestion].answers.map((answer, index) => (
+                            <button
+                                key={index}
+                                className={`block w-full py-3 px-6 rounded-lg text-white transition-colors ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'
+                                    }`}
+                                onClick={() => handleAnswer(index)}
+                                disabled={loading}
+                            >
+                                {answer}
+                            </button>
+                        ))}
+                    </div>
+                    {loading && <div className="mt-4 text-center text-gray-600">Loading...</div>}
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -296,7 +326,7 @@ const StarterPokemonPage: React.FC = () => {
 
             {/* Right Section */}
             <div className="w-7/12 p-4">
-                {chosenPokemon ? (
+                {chosenPokemon && (
                     <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-200 flex flex-col items-center">
                         <h2 className="text-3xl font-semibold mb-6 text-gray-800">Your Pokémon</h2>
                         <img src={chosenPokemon.imageUrl} alt={chosenPokemon.name} className="w-48 h-48 rounded-full shadow-lg mb-4 border border-gray-300" />
@@ -313,26 +343,12 @@ const StarterPokemonPage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ) : (
-                    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 max-w-lg w-full mx-auto">
-                        <h2 className="text-2xl font-medium mb-4 text-gray-800">{questions[currentQuestion].question}</h2>
-                        <div className="space-y-2">
-                            {questions[currentQuestion].answers.map((answer, index) => (
-                                <button
-                                    key={index}
-                                    className={`block w-full py-3 px-6 rounded-lg text-white transition-colors ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'
-                                        }`}
-                                    onClick={() => handleAnswer(index)}
-                                    disabled={loading}
-                                >
-                                    {answer}
-                                </button>
-                            ))}
+                        <div className='w-[50%] mt-[2rem]'>
+                            <PokemonMoves moves={chosenPokemon.moves} />
                         </div>
-                        {loading && <div className="mt-4 text-center text-gray-600">Loading...</div>}
                     </div>
-                )}
+                )
+                }
             </div>
         </div>
     );

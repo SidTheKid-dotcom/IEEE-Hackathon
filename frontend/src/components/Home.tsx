@@ -176,6 +176,13 @@ const Home: React.FC = () => {
     )
   }
 
+  const handleClearFilters = () => {
+    setSortOption('number');
+    setFilterType('');
+    setFilterAbility('');
+    setFilterStats({ stat: '', value: 0 });
+  }
+
   return (
     <div className="bg-blue-100 text-black font-sans h-screen">
       <Particle></Particle>
@@ -231,6 +238,10 @@ const Home: React.FC = () => {
                 className="block w-1/2 pl-3 pr-10 py-1.5 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
               />
             </div>
+            <div className='mt-[0.15rem]'>
+              <button onClick={handleClearFilters} className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md focus:outline-none hover:bg-red-600"
+              >Clear Filters</button>
+            </div>
           </div>
           <div className="mr-4">
             <label className="block text-sm font-medium text-gray-700">Search</label>
@@ -249,6 +260,7 @@ const Home: React.FC = () => {
             </button>
           </div>
         </div>
+
         {searchResult ? (
           <div className="grid grid-cols-1 gap-6 mb-8" onClick={() => navigateToPokemon(searchResult.id)}>
             <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105 group">
