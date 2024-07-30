@@ -6,6 +6,8 @@ import PokemonLocation from './PokemonLocation';
 import PokemonMap from './PokemonMap';
 import EvolvingPage from './EvolvingPage';
 import PokemonMoves from './PokemonMoves';
+ 
+import PokeballLoader from './PokeballLoader';
 
 
 const PokemonCardWrapper = () => {
@@ -242,7 +244,11 @@ const PokemonCardWrapper = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className='flex justify-center items-center h-screen'>
+        <PokeballLoader />
+      </div>
+    );
   }
 
   if (isEvolving.evolving) {
