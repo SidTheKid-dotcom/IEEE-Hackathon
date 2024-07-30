@@ -73,7 +73,7 @@ const PokemonCardWrapper = () => {
       const stats = document.querySelectorAll('.stat-bar-inner');
       stats.forEach((stat, index) => {
         const statValue = pokemonData.stats[index].base_stat;
-        const widthPercentage = (statValue / 200) * 100; // Calculate width based on max value of 200
+        const widthPercentage = (statValue / 180) * 100; // Calculate width based on max value of 200
         setTimeout(() => {
           stat.style.width = `${widthPercentage}%`;
         }, 100);
@@ -90,7 +90,7 @@ const PokemonCardWrapper = () => {
   const handleCommentSubmit = async () => {
     if (!hasCommented && comments.trim()) {
       setCommentList([...commentList, comments]);
-      setComments('');
+      setHasCommented(true);
 
       const token = JSON.parse(String(localStorage.getItem('token')));
       const pokemonId = Number(id);
@@ -115,6 +115,28 @@ const PokemonCardWrapper = () => {
 
         setHasCommented(true);
       }
+    }
+  };
+
+  const handleDeleteComment = async (index) => {
+    const updatedComments = commentList.filter((_, i) => i !== index);
+    setCommentList(updatedComments);
+    setHasCommented(false);
+    setComments('');
+
+    const token = JSON.parse(String(localStorage.getItem('token')));
+    const pokemonId = Number(id);
+
+    if (token) {
+      await axios.delete('http://localhost:3010/deleteComment', {
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        data: {
+          pokemon_id: pokemonId
+        }
+      });
     }
   };
 
@@ -143,6 +165,26 @@ const PokemonCardWrapper = () => {
         setIsEvolving({ evolving: true, prevPokemon: prevPokemon, newPokemon: newPokemon });
       }
       setHasRating(true);
+    }
+  };
+
+  const handleDeleteRating = async () => {
+    setRating(0);
+    setHasRating(false);
+
+    const token = JSON.parse(String(localStorage.getItem('token')));
+    const pokemonId = Number(id);
+
+    if (token) {
+      await axios.delete('http://localhost:3010/deleteRating', {
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        data: {
+          pokemon_id: pokemonId
+        }
+      });
     }
   };
 
@@ -283,6 +325,10 @@ const PokemonCardWrapper = () => {
             ))}
           </div>
 
+          {
+            hasRating && <button className="" onClick={handleDeleteRating}>Delete Rating!</button>
+          }
+
           <div className="sound-container w-full flex flex-row justify-center">
             <button
               onClick={handlePlaySound}
@@ -317,19 +363,30 @@ const PokemonCardWrapper = () => {
           </div>
 
           <div className="comment-section">
-            <textarea
-              value={comments}
-              onChange={(e) => setComments(e.target.value)}
-              placeholder="Leave a comment..."
-              disabled={hasCommented}
-            />
-            <button className='yash mt-[1rem]' onClick={handleCommentSubmit} disabled={hasCommented}>Submit</button>
-            <div className="comments-list">
-              {commentList.map((comment, index) => (
-                <p key={index}>{comment}</p>
-              ))}
-            </div>
+            {
+              !hasCommented ? (
+                <div className='w-full flex flex-col justify-center items-center'>
+                  <textarea
+                    value={comments}
+                    onChange={(e) => setComments(e.target.value)}
+                    placeholder="Leave a comment..."
+                    disabled={hasCommented}
+                  />
+                  <button className='yash mt-[1rem]' onClick={handleCommentSubmit} disabled={hasCommented}>Submit</button>
+                </div>
+              ) : (
+                <div>{comments}</div>
+              )}
+            {/* <div className="comments-list">
+              {
+                commentList.length > 0 && commentList.map((comment, index) => (
+                  <p key={index}>{comment}</p>
+                ))}
+            </div> */}
           </div>
+          {
+            hasCommented && <button className='yash mt-[1rem]' onClick={handleDeleteComment}>Delete Comment</button>
+          }
         </div>
         <div className="h-[60px] w-full "></div>
         <div className="flex flex-row justify-around bg-blue-50 items-center w-screen h-full relative">

@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import CameraPage from './components/CameraPage';
+import ScrollToTop from './ScrollToTop';
 
 // @ts-ignore
 import PokemonCardWrapper from './components/PokemonCardWrapper.jsx';
@@ -20,6 +21,7 @@ const App: React.FC = () => {
   return (
     <>
       <Navbar />
+      <ScrollToTop />
       <div className='mt-[3rem]'>
         <Routes>
           <Route path="/" element={<Home />} />
