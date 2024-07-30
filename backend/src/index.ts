@@ -116,7 +116,7 @@ app.get('/user/:userId', authMiddleware, async (req: AuthRequest, res: Response)
             orderBy: {
                 activity: 'desc',
             },
-            take: 3,
+            take: 6,
         });
         
         // Get user ID from the auth middleware

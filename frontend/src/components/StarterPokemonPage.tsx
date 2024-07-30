@@ -179,10 +179,9 @@ const StarterPokemonPage: React.FC = () => {
             }
         };
 
-        setLoading(true);
         fetchUserData();
         fetchChosenPokemon();
-        setTimeout(() => { setLoading(false) }, 500);
+        setLoading(false);
     }, []);
 
 
@@ -250,6 +249,9 @@ const StarterPokemonPage: React.FC = () => {
             </div>
         );
     }
+
+    console.log(chosenPokemon);
+    console.log(loading);
 
     if (!chosenPokemon && !loading) {
         return (

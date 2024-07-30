@@ -184,7 +184,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="bg-blue-100 text-black font-sans h-screen">
+    <div className="bg-blue-100 text-black font-sans h-full">
       <Particle></Particle>
       <div className="container mx-auto text-center py-8">
         <h1 className="text-4xl font-bold text-red-500 mb-8">Pokédex</h1>
@@ -196,8 +196,8 @@ const Home: React.FC = () => {
               onChange={(e) => setSortOption(e.target.value)}
               className="mt-1 block w-full pl-3 pr-10 py-1.5 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
             >
-              <option value="number">Number</option>
-              <option value="type">Type</option>
+              <option value="number">Type</option>
+              <option value="type">Number</option>
             </select>
           </div>
           <div className="mr-4">
@@ -239,7 +239,7 @@ const Home: React.FC = () => {
               />
             </div>
             <div className='mt-[0.15rem]'>
-              <button onClick={handleClearFilters} className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md focus:outline-none hover:bg-red-600"
+              <button onClick={handleClearFilters} className="z-10 mt-2 bg-red-500 text-white py-2 px-4 rounded-md focus:outline-none hover:bg-red-600"
               >Clear Filters</button>
             </div>
           </div>

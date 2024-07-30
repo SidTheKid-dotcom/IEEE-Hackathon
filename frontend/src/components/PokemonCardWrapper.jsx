@@ -293,9 +293,9 @@ const PokemonCardWrapper = () => {
 
           <div className="main-section">
             <div className="details">
-              <p>ID: {pokemonData.id}</p>
-              <p>Height: {pokemonData.height}</p>
-              <p>Weight: {pokemonData.weight}</p>
+              <p>ID: {pokemonData.id} </p>
+              <p>Height: {pokemonData.height} {"dm"}</p>
+              <p>Weight: {pokemonData.weight} {"hm"}</p>
               <p>Abilities: {pokemonData.abilities.map(ability => ability.ability.name).join(', ')}</p>
               <p>Forms: {pokemonData.forms.map(form => form.name).join(', ')}</p>
               <div className="type-box">
