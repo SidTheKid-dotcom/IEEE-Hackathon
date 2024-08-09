@@ -1,4 +1,4 @@
-const api="AIzaSyCdx6gwEd_a1__-32qtEyhfj92KRAWjzqs";
+const api="write your api key here";
 /*
  * Install the Generative AI SDK
  *
