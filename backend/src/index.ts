@@ -382,7 +382,7 @@ import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import { GoogleAIFileManager } from "@google/generative-ai/server";
 
 // Initialize GoogleGenerativeAI with your API_KEY.
-const genAI = new GoogleGenerativeAI("AIzaSyBPDAulhDgCKGr8ugym1dz9mByBk7QWBHo");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
 const model: GenerativeModel = genAI.getGenerativeModel({
     // Choose a Gemini model.
@@ -391,7 +391,7 @@ const model: GenerativeModel = genAI.getGenerativeModel({
 
 // Initialize GoogleAIFileManager with your API_KEY.
 const fileManager = new GoogleAIFileManager(
-    "AIzaSyBPDAulhDgCKGr8ugym1dz9mByBk7QWBHo"
+    process.env.GEMINI_API_KEY as string
 );
 
 // Configure storage for Multer
