@@ -1,66 +1,42 @@
-# IEEE-Hackathon
-This repo has been created for PISB's Hackathon 2024
+# IEEE Hackathon Project - PISB Branch, PICT
 
-This project is an Express.js application that uses Prisma ORM to interact with a PostgreSQL database. The application includes endpoints to create users and manage their favorite Pokémon.
-Features
+This repository contains the codebase for the Full Stack Web Development project created during the IEEE Hackathon, conducted by the PISB branch at PICT. The project leverages modern web technologies to create an interactive Pokémon-themed platform with various features.
 
-    User creation
-    Adding favorite Pokémon for users
-    Fetching user details along with their favorite Pokémon
+## Project Overview
 
-Tech Stack
+The web application is built using TypeScript, Node.js, Prisma, Express.js, and PostgreSQL as the backend stack. The frontend was made using React and includes interactive Pokémon features that enhance the user experience, utilizing data from the PokéAPI and additional map integration.
 
-    Backend: Node.js, Express.js
-    Database: PostgreSQL
-    ORM: Prisma
-    Version Control: Git
+### Key Features
 
-Prerequisites
+1. **Pokémon Data Integration**:  
+   The app fetches data from the PokéAPI, providing users with detailed information about different Pokémon, including their stats, moves, and abilities.
 
-    Node.js
-    PostgreSQL
-    Prisma CLI
-    Git
+2. **Trivia & Starter Pokémon Assignment**:  
+   The app includes a trivia feature where users answer a set of questions to determine which starter Pokémon best suits them. Based on the answers, a Pokémon is assigned.
 
-Setup
-1. Clone the Repository
+3. **Pokémon Photo Capture & Identification**:  
+   Using **Gemini**, we integrated a live camera capture feature, where users can take a photo of a Pokémon from their browser's camera. The platform identifies the Pokémon from the captured image and allows users to view information of the captured pokemon.
 
-git clonehttps://github.com/SidTheKid-dotcom/IEEE-Hackathon.git
-cd IEEE-Hackathon
+4. **Real-Time Pokémon Leveling & Evolution**:  
+   Once a user has been assigned a starter Pokémon, their Pokémon evolves over time as they spend more time on the site. This creates a dynamic interaction, similar to the progression system in the Pokémon games.
 
-2. Install Dependencies
+5. **Pokémon Region Map & Locations**:  
+   In addition to displaying Pokémon information, the app integrates a Pokémon region map feature. This map showcases the region where a particular Pokémon was first introduced (e.g., Kanto, Johto, Hoenn). It pinpoints the exact locations where the Pokémon can be found in the wild, adding a visual, interactive layer to the data. Users can explore the Pokémon world, seeing key habitats and regions on the map.
 
-Navigate to the backend directory and install dependencies:
+6. **Personalized Pokemon Gallery**:
+   Users can mark a pokemon as favourite or add comments on pokemons. This adds an element of personalization specific to each user.
 
-cd backend
-npm install
+## Technologies Used
 
-3. Set Up Environment Variables
-
-Create a .env file in the backend directory and add your database connection string:
-
-plaintext
-
-DATABASE_URL="your-database-connection-string"
-
-4. Initialize Prisma
-
-Generate Prisma client and migrate the database:
-
-npx prisma generate
-npx prisma migrate dev --name init
-
-5. Start the Server
-
-In the backend directory, start the server:
-
-npm start
-
-
-Contributing
-
-    Fork the repository.
-    Create a new branch: git checkout -b my-feature-branch.
-    Make your changes and commit them: git commit -m 'Add some feature'.
-    Push to the branch: git push origin my-feature-branch.
-    Submit a pull request.
+- **Frontend**: 
+  - TypeScript
+  - React.js
+  - TailwindCSS
+- **Backend**: 
+  - Node.js with typescript
+  - Express with typescript
+  - Prisma (ORM)
+  - PostgreSQL (Database)
+- **APIs & Services**: 
+  - [PokéAPI](https://pokeapi.co/): For fetching Pokémon data.
+  - **Gemini**: Used to identify Pokémon captured via the browser's live photo feature and enable AI-based interactions with the Pokémon.
